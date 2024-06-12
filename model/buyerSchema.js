@@ -34,6 +34,10 @@ const buyerSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    active: {
+      type: Boolean,
+      default: true, // Only ADMIN can change this field.
+    },
   },
   {
     timestamps: true,
