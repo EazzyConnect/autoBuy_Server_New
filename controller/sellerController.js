@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 const Seller = require("../model/sellerSchema");
 const SellerOTP = require("../model/otpSchema");
-const { sendOTPEmail, recoverPassworOTP } = require("./otpController");
+const { sendSellerOTPEmail, recoverPassworOTP } = require("./otpController");
 
 // ******* PASSWORD VALIDATOR ************
 const passwordRegex =
@@ -71,7 +71,7 @@ module.exports.signUp = async (req, res) => {
 
     // Send OTP if registration is succesfull
     if (newSeller) {
-      await sendOTPEmail(newSeller, res);
+      await sendSellerOTPEmail(newSeller, res);
       return res.status(201);
     } else {
       return res
@@ -84,79 +84,79 @@ module.exports.signUp = async (req, res) => {
   }
 };
 
-// ******* SIGN-IN ***********
-module.exports.login = async (req, res) => {
-  const { email, password } = req.body;
+// ******* SIGN-IN (NOT USED) ***********
+// module.exports.login = async (req, res) => {
+//   const { email, password } = req.body;
 
-  // Check if expected user details are provided
-  if (!email || !password) {
-    return res
-      .status(406)
-      .json({ error: "⚠️ Provide all fields", success: false });
-  }
+//   // Check if expected user details are provided
+//   if (!email || !password) {
+//     return res
+//       .status(406)
+//       .json({ error: "⚠️ Provide all fields", success: false });
+//   }
 
-  // Check for the user in the db
-  const seller = await Seller.findOne({ email });
-  if (!seller) {
-    return res
-      .status(401)
-      .json({ error: "⚠️ Authentication Failed", success: false });
-  }
+//   // Check for the user in the db
+//   const seller = await Seller.findOne({ email });
+//   if (!seller) {
+//     return res
+//       .status(401)
+//       .json({ error: "⚠️ Authentication Failed", success: false });
+//   }
 
-  // Check if password is correct
-  const checkPassword = await bcrypt.compare(password, seller.password);
-  if (!checkPassword) {
-    return res
-      .status(401)
-      .json({ error: "⚠️ Authentication Failed", success: false });
-  }
+//   // Check if password is correct
+//   const checkPassword = await bcrypt.compare(password, seller.password);
+//   if (!checkPassword) {
+//     return res
+//       .status(401)
+//       .json({ error: "⚠️ Authentication Failed", success: false });
+//   }
 
-  // Check if user is approved
-  const approvedUser = (await seller.approved) === true;
-  if (!approvedUser) {
-    return res.status(401).json({
-      error: "⚠️ Please verify your email.",
-      success: false,
-    });
-  }
+//   // Check if user is approved
+//   const approvedUser = (await seller.approved) === true;
+//   if (!approvedUser) {
+//     return res.status(401).json({
+//       error: "⚠️ Please verify your email.",
+//       success: false,
+//     });
+//   }
 
-  // Check if user is active
-  const activeUser = (await seller.active) === true;
-  if (!activeUser) {
-    return res.status(401).json({
-      error:
-        "⚠️ Your account has been deactivated. Please contact customer support",
-      success: false,
-    });
-  }
+//   // Check if user is active
+//   const activeUser = (await seller.active) === true;
+//   if (!activeUser) {
+//     return res.status(401).json({
+//       error:
+//         "⚠️ Your account has been deactivated. Please contact customer support",
+//       success: false,
+//     });
+//   }
 
-  try {
-    // Assign token and redirect to profile page
-    const expireDate = new Date(Date.now() + 3600000); // 1-hour
-    const token = jwt.sign({ _id: seller._id }, process.env.SECRET_KEY, {
-      expiresIn: "1h",
-    });
-    res.cookie("auth", token, {
-      expires: expireDate,
-      secure: true,
-      httpOnly: true,
-    });
-    // res.redirect("/user/profile");
-    const {
-      password: hashedPassword,
-      _id,
-      __v,
-      active,
-      approved,
-      createdAt,
-      updatedAt,
-      lastChangedPassword,
-      ...others
-    } = seller._doc;
-    return res.status(200).json({ data: others, success: true });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "An error occured", success: false });
-  }
-};
+//   try {
+//     // Assign token and redirect to profile page
+//     const expireDate = new Date(Date.now() + 3600000); // 1-hour
+//     const token = jwt.sign({ _id: seller._id }, process.env.SECRET_KEY, {
+//       expiresIn: "1h",
+//     });
+//     res.cookie("auth", token, {
+//       expires: expireDate,
+//       secure: true,
+//       httpOnly: true,
+//     });
+//     // res.redirect("/user/profile");
+//     const {
+//       password: hashedPassword,
+//       _id,
+//       __v,
+//       active,
+//       approved,
+//       createdAt,
+//       updatedAt,
+//       lastChangedPassword,
+//       ...others
+//     } = seller._doc;
+//     return res.status(200).json({ data: others, success: true });
+//   } catch (error) {
+//     return res
+//       .status(500)
+//       .json({ message: "An error occured", success: false });
+//   }
+// };

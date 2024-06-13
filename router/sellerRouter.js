@@ -3,8 +3,8 @@ const router = express.Router();
 
 router.use(express.json());
 
-const { signUp, login } = require("../controller/sellerController");
-const { verifyOTP } = require("../controller/otpController");
+const { signUp } = require("../controller/sellerController");
+const { verifySellerOTP } = require("../controller/otpController");
 
 router.use(express.json());
 
@@ -12,9 +12,6 @@ router.use(express.json());
 router.post("/register", signUp);
 
 // ***** VERIFY EMAIL ROUTE *********
-router.post("/verification", verifyOTP);
-
-// ********* LOGIN ROUTE ************
-router.post("/login", login);
+router.post("/verification", verifySellerOTP);
 
 module.exports = router;
