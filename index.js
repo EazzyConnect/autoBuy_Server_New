@@ -9,6 +9,7 @@ const buyerRouter = require("./router/buyerRouter");
 const sellerRouter = require("./router/sellerRouter");
 const brokerRouter = require("./router/brokerRouter");
 const adminRouter = require("./router/adminRouter");
+const loginRouter = require("./router/loginRouter");
 
 const app = express();
 dotenv.config();
@@ -26,6 +27,7 @@ app.use("/buyer", buyerRouter);
 app.use("/seller", sellerRouter);
 app.use("/broker", brokerRouter);
 app.use("/admin", adminRouter);
+app.use("/users", loginRouter);
 
 // // Render client
 // app.get("*", (req, res) =>

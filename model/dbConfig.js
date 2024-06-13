@@ -8,7 +8,7 @@ const CLOUD_DB = process.env.MONGODB_URL;
 
 const dbConnection = async () => {
   try {
-    await connect(CLOUD_DB).then(() => {
+    await connect(DB).then(() => {
       console.log("Database connected");
     });
   } catch (error) {
