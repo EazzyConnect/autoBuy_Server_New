@@ -1,6 +1,7 @@
 const { model, Schema } = require("mongoose");
 
-const otpVerificationSchema = new Schema({
+// BUYER
+const buyerOtpVerSchema = new Schema({
   userId: {
     type: String,
     ref: "buyers",
@@ -15,6 +16,60 @@ const otpVerificationSchema = new Schema({
   expiresAt: Date,
 });
 
-const BuyerOTP = new model("userOtps", otpVerificationSchema);
+const BuyerOTP = new model("buyerOtps", buyerOtpVerSchema);
 
-module.exports = BuyerOTP;
+// SELLER
+const sellerOtpVerSchema = new Schema({
+  userId: {
+    type: String,
+    ref: "sellers",
+  },
+  otp: {
+    type: String,
+  },
+  email: {
+    type: String,
+  },
+  createdAt: Date,
+  expiresAt: Date,
+});
+
+const SellerOTP = new model("sellerOtps", sellerOtpVerSchema);
+
+// BROKER
+const brokerOtpVerSchema = new Schema({
+  userId: {
+    type: String,
+    ref: "brokers",
+  },
+  otp: {
+    type: String,
+  },
+  email: {
+    type: String,
+  },
+  createdAt: Date,
+  expiresAt: Date,
+});
+
+const BrokerOTP = new model("brokerOtps", brokerOtpVerSchema);
+
+// ADMIN
+const adminOtpVerSchema = new Schema({
+  userId: {
+    type: String,
+    ref: "admins",
+  },
+  otp: {
+    type: String,
+  },
+  email: {
+    type: String,
+  },
+  createdAt: Date,
+  expiresAt: Date,
+});
+
+const AdminOTP = new model("adminOtps", adminOtpVerSchema);
+
+module.exports = { BuyerOTP, SellerOTP, BrokerOTP, AdminOTP };

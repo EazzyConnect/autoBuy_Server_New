@@ -4,9 +4,11 @@ dotenv.config();
 
 const DB = process.env.LOCAL_URL;
 
+const CLOUD_DB = process.env.MONGODB_URL;
+
 const dbConnection = async () => {
   try {
-    await connect(DB).then(() => {
+    await connect(CLOUD_DB).then(() => {
       console.log("Database connected");
     });
   } catch (error) {

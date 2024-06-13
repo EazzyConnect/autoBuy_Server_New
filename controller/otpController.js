@@ -2,8 +2,9 @@ const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const BuyerOTP = require("../model/otpSchema");
+const { BuyerOTP, SellerOTP } = require("../model/otpSchema");
 const Buyer = require("../model/buyerSchema");
+const Seller = require("../model/sellerSchema");
 dotenv.config();
 
 // ******** NODEMAILER SETUP *********
@@ -18,7 +19,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// ******** SEND OTP ************
+// ******** SEND OTP (BUYER) ************
 module.exports.sendOTPEmail = async (user, res) => {
   const { _id, email } = user;
   try {
@@ -65,7 +66,7 @@ module.exports.sendOTPEmail = async (user, res) => {
   }
 };
 
-// ********** VERIFY OTP EMAIL ***********
+// ********** VERIFY OTP EMAIL (BUYER) ***********
 module.exports.verifyOTP = async (req, res) => {
   try {
     const { otp } = req.body;
@@ -133,6 +134,137 @@ module.exports.verifyOTP = async (req, res) => {
           if (updateUser) {
             // Delete the OTP from db
             await BuyerOTP.deleteMany(
+              { userId: user_Id } || { email: userEmail }
+            );
+            return res.status(200).json({
+              success: true,
+              message: "User email verified successfully.",
+            });
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error(`verifyErr: `, error);
+    res.status(403).json({ success: false, message: error.message });
+  }
+};
+
+// ******** SEND OTP (SELLER) ************
+module.exports.sendOTPEmail = async (user, res) => {
+  const { _id, email } = user;
+  try {
+    // Generate OTP
+    const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
+
+    // Construct the mail to be sent to user
+    const mailOptions = {
+      from: process.env.AUTH_EMAIL,
+      to: email,
+      subject: "Verify Your Email",
+      html: `<p> Enter this OTP code: <b>${otp}</b> to verify your email address: <b>${email}</b> and complete signing up. </p>
+      <br>
+      <b>NOTE: This OTP expires in five (5) minutes.</b>
+      `,
+    };
+
+    // Hashing OTP
+    const hashedOTP = await bcrypt.hash(otp, 12);
+
+    // Create a record in the db
+    const newOTPVerification = await new SellerOTP({
+      userId: _id,
+      email,
+      otp: hashedOTP,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 300000, // 5 minutes
+    });
+    await newOTPVerification?.save();
+
+    // Send mail to user
+    await transporter.sendMail(mailOptions);
+    // console.log(`Email sent to ${email}!`);
+
+    return res.status(200).json({
+      success: true,
+      message: `Verification OTP email sent to ${email}`,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+// ********** VERIFY OTP EMAIL (SELLER) ***********
+module.exports.verifyOTP = async (req, res) => {
+  try {
+    const { otp } = req.body;
+    if (!otp) {
+      return res
+        .status(406)
+        .json({ success: false, error: "Please provide OTP" });
+    }
+
+    // Confirm token existence
+    const token = req.cookies.auth;
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        error: "Session expired. Request OTP again.",
+      });
+    }
+
+    // Verifying and decoding the token
+    const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+
+    // Extracting items from the decoded token
+    const user_Id = decodedToken._id;
+    const userEmail = decodedToken.email;
+    // console.log(`userEmail: `, userEmail, `userID: `, user_Id);
+
+    // Checking for the user information using either email or id.
+    // At signup, token was created with user id; while at resendOTP, token was created with user email
+    const userOTPVerifyRecords = await SellerOTP.findOne({
+      $or: [{ userId: user_Id }, { email: userEmail }],
+    });
+
+    if (!userOTPVerifyRecords) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "No record found, please sign up or login or request new OTP code.",
+      });
+    } else {
+      // OTP record exists
+      const { expiresAt, otp: hashedOTP } = userOTPVerifyRecords;
+
+      // checking if OTP has expired or not
+      if (expiresAt < Date.now()) {
+        await SellerOTP.deleteMany({ userId: user_Id } || { email: userEmail });
+        return res.status(400).json({
+          success: false,
+          error: "OTP code has expired, please request again.",
+        });
+      } else {
+        // OTP is available but checking if it's valid
+        const validOTP = await bcrypt.compare(otp, hashedOTP);
+        if (!validOTP) {
+          return res
+            .status(406)
+            .json({ success: false, error: "Invalid code provided." });
+        } else {
+          // Success. Approve the user
+          const updateUser = await Seller.updateOne(
+            { $or: [{ _id: user_Id }, { email: userEmail }] },
+            { $set: { approved: true } }
+          );
+
+          if (updateUser) {
+            // Delete the OTP from db
+            await SellerOTP.deleteMany(
               { userId: user_Id } || { email: userEmail }
             );
             return res.status(200).json({
