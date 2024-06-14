@@ -13,7 +13,7 @@ router.use(express.json());
 router.post("/login", usersLogin);
 
 // ******** RESEND OTP *************
-router.post("/resendotp", resendOTP);
+router.get("/resendotp", resendOTP);
 
 // ******** FORGOT PASSWORD *************
 router.post("/forgotpassword", forgotPassword);

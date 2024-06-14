@@ -54,7 +54,8 @@ module.exports.signUp = async (req, res) => {
     await newBroker?.save();
 
     // Set token to expire in 6mins (360 * 1000)
-    const expiresIn = 360 * 1000;
+    // const expiresIn = 360 * 1000;
+    const expiresIn = 3600000;
 
     // Create a token
     const token = jwt.sign({ _id: newBroker._id }, process.env.SECRET_KEY, {

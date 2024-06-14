@@ -8,6 +8,10 @@ const Seller = require("../model/sellerSchema");
 const Broker = require("../model/brokerSchema");
 dotenv.config();
 
+// ******* PASSWORD VALIDATOR ************
+const passwordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&#])[A-Za-z\d@$!%?&#]{8,}$/; // Password must contain 'a-z A-Z 0-9 @$!%?&#'
+
 // ******** NODEMAILER SETUP *********
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -49,7 +53,8 @@ module.exports.sendBuyerOTPEmail = async (user, res) => {
       email,
       otp: hashedOTP,
       createdAt: Date.now(),
-      expiresAt: Date.now() + 300000, // 5 minutes
+      // expiresAt: Date.now() + 300000, // 5 minutes
+      expiresAt: Date.now() + 3600000, // 1hr
     });
     await newOTPVerification?.save();
 
@@ -100,7 +105,8 @@ module.exports.recoverBuyerPasswordOTP = async (user, res) => {
       email,
       otp: hashedOTP,
       createdAt: Date.now(),
-      expiresAt: Date.now() + 300000, // 5 minutes
+      // expiresAt: Date.now() + 300000, // 5 minutes
+      expiresAt: Date.now() + 3600000, // 1hr
     });
     await newOTPVerification?.save();
 
@@ -109,7 +115,8 @@ module.exports.recoverBuyerPasswordOTP = async (user, res) => {
     // console.log(`Email sent to ${email}!`);
 
     // Set token to expire in 6mins
-    const expiresIn = 360000;
+    // const expiresIn = 360000;
+    const expiresIn = 3600000;
 
     // Create a token
     const token = jwt.sign({ email }, process.env.SECRET_KEY, {
@@ -248,7 +255,8 @@ module.exports.sendSellerOTPEmail = async (user, res) => {
       email,
       otp: hashedOTP,
       createdAt: Date.now(),
-      expiresAt: Date.now() + 300000, // 5 minutes
+      // expiresAt: Date.now() + 300000, // 5 minutes
+      expiresAt: Date.now() + 3600000, // 1hr
     });
     await newOTPVerification?.save();
 
@@ -299,7 +307,8 @@ module.exports.recoverSellerPasswordOTP = async (user, res) => {
       email,
       otp: hashedOTP,
       createdAt: Date.now(),
-      expiresAt: Date.now() + 300000, // 5 minutes
+      // expiresAt: Date.now() + 300000, // 5 minutes
+      expiresAt: Date.now() + 3600000, // 1hr
     });
     await newOTPVerification?.save();
 
@@ -308,7 +317,8 @@ module.exports.recoverSellerPasswordOTP = async (user, res) => {
     // console.log(`Email sent to ${email}!`);
 
     // Set token to expire in 6mins
-    const expiresIn = 360000;
+    // const expiresIn = 360000;
+    const expiresIn = 3600000;
 
     // Create a token
     const token = jwt.sign({ email }, process.env.SECRET_KEY, {
@@ -447,7 +457,8 @@ module.exports.sendBrokerOTPEmail = async (user, res) => {
       email,
       otp: hashedOTP,
       createdAt: Date.now(),
-      expiresAt: Date.now() + 300000, // 5 minutes
+      // expiresAt: Date.now() + 300000, // 5 minutes
+      expiresAt: Date.now() + 3600000, // 1hr
     });
     await newOTPVerification?.save();
 
@@ -498,7 +509,8 @@ module.exports.recoverBrokerPasswordOTP = async (user, res) => {
       email,
       otp: hashedOTP,
       createdAt: Date.now(),
-      expiresAt: Date.now() + 300000, // 5 minutes
+      // expiresAt: Date.now() + 300000, // 5 minutes
+      expiresAt: Date.now() + 3600000, // 1hr
     });
     await newOTPVerification?.save();
 
@@ -507,7 +519,8 @@ module.exports.recoverBrokerPasswordOTP = async (user, res) => {
     // console.log(`Email sent to ${email}!`);
 
     // Set token to expire in 6mins
-    const expiresIn = 360000;
+    // const expiresIn = 360000;
+    const expiresIn = 3600000;
 
     // Create a token
     const token = jwt.sign({ email }, process.env.SECRET_KEY, {
@@ -618,91 +631,314 @@ module.exports.verifyBrokerOTP = async (req, res) => {
 };
 
 // ********** RESEND OTP FOR ALL USERS ***********
+// module.exports.resendOTP = async (req, res) => {
+//   try {
+//     // Confirm token existence
+//     const token = req.cookies.auth;
+
+//     if (!token) {
+//       return res.status(401).json({
+//         success: false,
+//         error: "Session expired. Provide yor email to resend OTP again.",
+//       });
+//     }
+
+//     // Verifying and decoding the token
+//     const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+//     console.log(`decoded: `, decodedToken);
+
+//     // Extracting items from the decoded token
+//     const user_Id = decodedToken._id;
+//     const userEmail = decodedToken.email;
+
+//     let user = await Buyer.findOne(
+//       { $or: [{ _id: user_Id }, { email: userEmail }] },
+//       "email _id"
+//     );
+//     let buyerEmail = user.email;
+//     console.log(`buyer: `, user);
+
+//     if (!buyerEmail) {
+//       const user = await Seller.findOne(
+//         { $or: [{ _id: user_Id }, { email: userEmail }] },
+//         "email -_id"
+//       );
+//       const sellerEmail = user.email;
+//       console.log(`SellerEmail: `, user);
+
+//       if (!sellerEmail) {
+//         const user = await Broker.findOne(
+//           { $or: [{ _id: user_Id }, { email: userEmail }] },
+//           "email -_id"
+//         );
+//         const brokerEmail = user.email;
+//         console.log(`BrokerEmail: `, brokerEmail);
+
+//         if (!brokerEmail) {
+//           return res.status(406).json({
+//             error: "Please provide your email address",
+//             success: false,
+//           });
+//         } else {
+//           await BrokerOTP.deleteMany({ email: brokerEmail });
+
+//           // Set cookies to expire in 6mins (360 * 1000)
+//           // const expiresIn = 360 * 1000;
+//           const expiresIn = 3600000;
+
+//           // Create a token
+//           const token = jwt.sign(
+//             { email: brokerEmail },
+//             process.env.SECRET_KEY,
+//             {
+//               expiresIn,
+//             }
+//           );
+
+//           // Set the token as cookie.
+//           res.cookie("auth", token, {
+//             maxAge: expiresIn,
+//             httpOnly: true,
+//             secure: true,
+//           });
+
+//           // call the sendOTP function
+//           module.exports.sendBrokerOTPEmail({ email: brokerEmail }, res);
+//         }
+//       } else {
+//         await SellerOTP.deleteMany({ email: sellerEmail });
+
+//         // Set cookies to expire in 6mins (360 * 1000)
+//         // const expiresIn = 360 * 1000;
+//         const expiresIn = 3600000;
+
+//         // Create a token
+//         const token = jwt.sign({ email: sellerEmail }, process.env.SECRET_KEY, {
+//           expiresIn,
+//         });
+
+//         // Set the token as cookie.
+//         res.cookie("auth", token, {
+//           maxAge: expiresIn,
+//           httpOnly: true,
+//           secure: true,
+//         });
+
+//         // call the sendOTP function
+//         module.exports.sendSellerOTPEmail({ email: sellerEmail }, res);
+//       }
+//     } else {
+//       await BuyerOTP.deleteMany({ email: buyerEmail });
+
+//       // Set cookies to expire in 6mins (360 * 1000)
+//       // const expiresIn = 360 * 1000;
+//       const expiresIn = 3600000;
+
+//       // Create a token
+//       const token = jwt.sign({ email: buyerEmail }, process.env.SECRET_KEY, {
+//         expiresIn,
+//       });
+
+//       // Set the token as cookie.
+//       res.cookie("auth", token, {
+//         maxAge: expiresIn,
+//         httpOnly: true,
+//         secure: true,
+//       });
+
+//       // call the sendOTP function
+//       module.exports.sendBuyerOTPEmail({ email: buyerEmail }, res);
+
+//       // const checkBuyerEmail = await Buyer.findOne(
+//       //   { email: buyerEmail },
+//       //   "email"
+//       // );
+//       // if (!checkBuyerEmail) {
+//       //   const checkSellerEmail = await Seller.findOne({ email }, "email");
+//       //   if (!checkSellerEmail) {
+//       //     const checkBrokerEmail = await Broker.findOne({ email }, "email");
+//       //     if (!checkBrokerEmail) {
+//       //       return res.status(404).json({
+//       //         error: "No record found",
+//       //         success: false,
+//       //       });
+//       //     } else {
+//       //       await BrokerOTP.deleteMany({ email });
+
+//       //       // Set cookies to expire in 6mins (360 * 1000)
+//       //       const expiresIn = 360 * 1000;
+
+//       //       // Create a token
+//       //       const token = jwt.sign({ email }, process.env.SECRET_KEY, {
+//       //         expiresIn,
+//       //       });
+
+//       //       // Set the token as cookie.
+//       //       res.cookie("auth", token, {
+//       //         maxAge: expiresIn,
+//       //         httpOnly: true,
+//       //         secure: true,
+//       //       });
+
+//       //       // call the sendOTP function
+//       //       module.exports.sendBrokerOTPEmail({ email }, res);
+//       //     }
+//       //   } else {
+//       //     await SellerOTP.deleteMany({ email });
+
+//       //     // Set cookies to expire in 6mins (360 * 1000)
+//       //     const expiresIn = 360 * 1000;
+
+//       //     // Create a token
+//       //     const token = jwt.sign({ email }, process.env.SECRET_KEY, {
+//       //       expiresIn,
+//       //     });
+
+//       //     // Set the token as cookie.
+//       //     res.cookie("auth", token, {
+//       //       maxAge: expiresIn,
+//       //       httpOnly: true,
+//       //       secure: true,
+//       //     });
+
+//       //     // call the sendOTP function
+//       //     module.exports.sendSellerOTPEmail({ email }, res);
+//       //   }
+//       // } else {
+//       //   await BuyerOTP.deleteMany({ email: buyerEmail });
+
+//       //   // Set cookies to expire in 6mins (360 * 1000)
+//       //   const expiresIn = 360 * 1000;
+
+//       //   // Create a token
+//       //   const token = jwt.sign({ email: buyerEmail }, process.env.SECRET_KEY, {
+//       //     expiresIn,
+//       //   });
+
+//       //   // Set the token as cookie.
+//       //   res.cookie("auth", token, {
+//       //     maxAge: expiresIn,
+//       //     httpOnly: true,
+//       //     secure: true,
+//       //   });
+
+//       //   // call the sendOTP function
+//       //   module.exports.sendBuyerOTPEmail({ email: buyerEmail }, res);
+//       // }
+//     }
+//   } catch (error) {
+//     console.log(`err: `, error.message);
+//     res.status(403).json({ success: false, message: "An error occured" });
+//   }
+// };
+
 module.exports.resendOTP = async (req, res) => {
   try {
-    const { email } = req.body;
-    if (!email) {
-      return res.status(406).json({
-        error: "Please provide your email address",
+    // Confirm token existence
+    const token = req.cookies.auth;
+
+    if (!token) {
+      return res.status(401).json({
         success: false,
+        error: "Session expired. Provide your email to resend OTP again.",
       });
+    }
+
+    // Verifying and decoding the token
+    const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+    console.log(`decoded: `, decodedToken);
+
+    // Extracting items from the decoded token
+    const user_Id = decodedToken._id;
+    const userEmail = decodedToken.email;
+
+    let user = await Buyer.findOne(
+      { $or: [{ _id: user_Id }, { email: userEmail }] },
+      "email _id"
+    );
+
+    if (user) {
+      const buyerEmail = user.email;
+      await BuyerOTP.deleteMany({ email: buyerEmail });
+
+      const expiresIn = 3600000; // 1 hour
+
+      const newToken = jwt.sign({ email: buyerEmail }, process.env.SECRET_KEY, {
+        expiresIn,
+      });
+
+      res.cookie("auth", newToken, {
+        maxAge: expiresIn,
+        httpOnly: true,
+        secure: true,
+      });
+
+      module.exports.sendBuyerOTPEmail({ email: buyerEmail }, res);
     } else {
-      const checkBuyerEmail = await Buyer.findOne({ email }, "email");
-      if (!checkBuyerEmail) {
-        const checkSellerEmail = await Seller.findOne({ email }, "email");
-        if (!checkSellerEmail) {
-          const checkBrokerEmail = await Broker.findOne({ email }, "email");
-          if (!checkBrokerEmail) {
-            return res.status(404).json({
-              error: "No record found",
-              success: false,
-            });
-          } else {
-            await BrokerOTP.deleteMany({ email });
+      user = await Seller.findOne(
+        { $or: [{ _id: user_Id }, { email: userEmail }] },
+        "email _id"
+      );
 
-            // Set cookies to expire in 6mins (360 * 1000)
-            const expiresIn = 360 * 1000;
+      if (user) {
+        const sellerEmail = user.email;
+        await SellerOTP.deleteMany({ email: sellerEmail });
 
-            // Create a token
-            const token = jwt.sign({ email }, process.env.SECRET_KEY, {
-              expiresIn,
-            });
+        const expiresIn = 3600000; // 1 hour
 
-            // Set the token as cookie.
-            res.cookie("auth", token, {
-              maxAge: expiresIn,
-              httpOnly: true,
-              secure: true,
-            });
-
-            // call the sendOTP function
-            module.exports.sendBrokerOTPEmail({ email }, res);
-          }
-        } else {
-          await SellerOTP.deleteMany({ email });
-
-          // Set cookies to expire in 6mins (360 * 1000)
-          const expiresIn = 360 * 1000;
-
-          // Create a token
-          const token = jwt.sign({ email }, process.env.SECRET_KEY, {
+        const newToken = jwt.sign(
+          { email: sellerEmail },
+          process.env.SECRET_KEY,
+          {
             expiresIn,
-          });
+          }
+        );
 
-          // Set the token as cookie.
-          res.cookie("auth", token, {
-            maxAge: expiresIn,
-            httpOnly: true,
-            secure: true,
-          });
-
-          // call the sendOTP function
-          module.exports.sendSellerOTPEmail({ email }, res);
-        }
-      } else {
-        await BuyerOTP.deleteMany({ email });
-
-        // Set cookies to expire in 6mins (360 * 1000)
-        const expiresIn = 360 * 1000;
-
-        // Create a token
-        const token = jwt.sign({ email }, process.env.SECRET_KEY, {
-          expiresIn,
-        });
-
-        // Set the token as cookie.
-        res.cookie("auth", token, {
+        res.cookie("auth", newToken, {
           maxAge: expiresIn,
           httpOnly: true,
           secure: true,
         });
 
-        // call the sendOTP function
-        module.exports.sendBuyerOTPEmail({ email }, res);
+        module.exports.sendSellerOTPEmail({ email: sellerEmail }, res);
+      } else {
+        user = await Broker.findOne(
+          { $or: [{ _id: user_Id }, { email: userEmail }] },
+          "email _id"
+        );
+
+        if (user) {
+          const brokerEmail = user.email;
+          await BrokerOTP.deleteMany({ email: brokerEmail });
+
+          const expiresIn = 3600000; // 1 hour
+
+          const newToken = jwt.sign(
+            { email: brokerEmail },
+            process.env.SECRET_KEY,
+            {
+              expiresIn,
+            }
+          );
+
+          res.cookie("auth", newToken, {
+            maxAge: expiresIn,
+            httpOnly: true,
+            secure: true,
+          });
+
+          module.exports.sendBrokerOTPEmail({ email: brokerEmail }, res);
+        } else {
+          return res.status(406).json({
+            error: "Please provide your email address",
+            success: false,
+          });
+        }
       }
     }
   } catch (error) {
-    res.status(403).json({ success: false, message: "An error occured" });
+    console.log(`err: `, error.message);
+    res.status(403).json({ success: false, message: "An error occurred" });
   }
 };
 
