@@ -117,7 +117,7 @@ module.exports.addProduct = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: "Product added successfully.",
-      // product: req.user.product[req.user.product.length - 1],
+      product: req.user.product[req.user.product.length - 1],
     });
   } catch (error) {
     // console.log(error);
@@ -162,7 +162,7 @@ module.exports.editProduct = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Product updated successfully",
-      // product: product,
+      product: product,
     });
   } catch (error) {
     // console.log(error);
