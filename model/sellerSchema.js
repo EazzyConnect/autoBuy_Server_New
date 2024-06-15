@@ -22,6 +22,14 @@ const sellerSchema = new Schema(
         "Password must be at least eight (8) characters and contain at least one (1) lowercase, one (1) uppercase, one (1) number and one (1) symbol ",
       ],
     },
+    product: [
+      {
+        productTag: { type: String },
+        productName: { type: String },
+        productDesc: { type: String },
+        productImg: { type: String },
+      },
+    ],
     role: {
       type: String,
       default: "Seller",

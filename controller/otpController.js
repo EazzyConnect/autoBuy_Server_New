@@ -126,7 +126,7 @@ module.exports.recoverBuyerPasswordOTP = async (user, res) => {
     // Set the token as cookie. // maxAge is in milliseconds
     res.cookie("auth", token, {
       maxAge: expiresIn,
-      httpOnly: true,
+      // httpOnly: true,
       secure: true,
     });
 
@@ -328,7 +328,7 @@ module.exports.recoverSellerPasswordOTP = async (user, res) => {
     // Set the token as cookie. // maxAge is in milliseconds
     res.cookie("auth", token, {
       maxAge: expiresIn,
-      httpOnly: true,
+      // httpOnly: true,
       secure: true,
     });
 
@@ -530,7 +530,7 @@ module.exports.recoverBrokerPasswordOTP = async (user, res) => {
     // Set the token as cookie. // maxAge is in milliseconds
     res.cookie("auth", token, {
       maxAge: expiresIn,
-      httpOnly: true,
+      // httpOnly: true,
       secure: true,
     });
 
@@ -698,7 +698,7 @@ module.exports.verifyBrokerOTP = async (req, res) => {
 //           // Set the token as cookie.
 //           res.cookie("auth", token, {
 //             maxAge: expiresIn,
-//             httpOnly: true,
+//            // httpOnly: true,
 //             secure: true,
 //           });
 
@@ -720,7 +720,7 @@ module.exports.verifyBrokerOTP = async (req, res) => {
 //         // Set the token as cookie.
 //         res.cookie("auth", token, {
 //           maxAge: expiresIn,
-//           httpOnly: true,
+//          // httpOnly: true,
 //           secure: true,
 //         });
 
@@ -742,7 +742,7 @@ module.exports.verifyBrokerOTP = async (req, res) => {
 //       // Set the token as cookie.
 //       res.cookie("auth", token, {
 //         maxAge: expiresIn,
-//         httpOnly: true,
+//         // httpOnly: true,
 //         secure: true,
 //       });
 
@@ -776,7 +776,7 @@ module.exports.verifyBrokerOTP = async (req, res) => {
 //       //       // Set the token as cookie.
 //       //       res.cookie("auth", token, {
 //       //         maxAge: expiresIn,
-//       //         httpOnly: true,
+//       //         // httpOnly: true,
 //       //         secure: true,
 //       //       });
 
@@ -869,7 +869,7 @@ module.exports.resendOTP = async (req, res) => {
 
       res.cookie("auth", newToken, {
         maxAge: expiresIn,
-        httpOnly: true,
+        // httpOnly: true,
         secure: true,
       });
 
@@ -896,7 +896,7 @@ module.exports.resendOTP = async (req, res) => {
 
         res.cookie("auth", newToken, {
           maxAge: expiresIn,
-          httpOnly: true,
+          // httpOnly: true,
           secure: true,
         });
 
@@ -923,7 +923,7 @@ module.exports.resendOTP = async (req, res) => {
 
           res.cookie("auth", newToken, {
             maxAge: expiresIn,
-            httpOnly: true,
+            // httpOnly: true,
             secure: true,
           });
 

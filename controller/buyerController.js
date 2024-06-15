@@ -66,7 +66,7 @@ module.exports.signUp = async (req, res) => {
     // Set the token as cookie. // maxAge is in milliseconds
     res.cookie("auth", token, {
       maxAge: expiresIn,
-      httpOnly: true,
+      // httpOnly: true,
       secure: true,
     });
 

@@ -66,7 +66,7 @@ module.exports.signUp = async (req, res) => {
     // Set the token as cookie. // maxAge is in milliseconds
     res.cookie("auth", token, {
       maxAge: expiresIn,
-      httpOnly: true,
+      // httpOnly: true,
       secure: true,
     });
 
@@ -82,6 +82,138 @@ module.exports.signUp = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.json(error.message);
+  }
+};
+
+// ******* ADD PRODUCT ********
+module.exports.addProduct = async (req, res) => {
+  try {
+    const { productName, productDesc, productImg } = req.body;
+
+    // Validate product details
+    if (!productName || !productDesc || !productImg) {
+      return res.status(400).json({
+        success: false,
+        error: "Please provide all product details",
+      });
+    }
+
+    // Generate a unique product tag
+    // const productTag = (req.user.product.length + 1).toString();
+    const productPrefix = productName.substring(0, 3).toUpperCase();
+    const productTag = `${productPrefix}${req.user.product.length + 1}`;
+
+    // Add product to seller's product array
+    req.user.product.push({
+      productTag,
+      productName,
+      productDesc,
+      productImg,
+    });
+
+    // Save the seller with the new product
+    await req.user.save();
+
+    return res.status(201).json({
+      success: true,
+      message: "Product added successfully.",
+      // product: req.user.product[req.user.product.length - 1],
+    });
+  } catch (error) {
+    // console.log(error);
+    return res.status(500).json({
+      success: false,
+      error: "An error occurred while adding the product",
+    });
+  }
+};
+
+// EDIT PRODUCT
+module.exports.editProduct = async (req, res) => {
+  try {
+    const { productTag, productName, productDesc, productImg } = req.body;
+
+    // Validate product details
+    if (!productTag || !productName || !productDesc || !productImg) {
+      return res.status(400).json({
+        success: false,
+        error: "Please provide all product details",
+      });
+    }
+
+    // Find the product by tag within the seller's products array
+    const product = req.user.product.find((p) => p.productTag === productTag);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: "Product not found",
+      });
+    }
+
+    // Update product details
+    product.productName = productName;
+    product.productDesc = productDesc;
+    product.productImg = productImg;
+
+    // Save the seller with the updated product
+    await req.user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Product updated successfully",
+      // product: product,
+    });
+  } catch (error) {
+    // console.log(error);
+    return res.status(500).json({
+      success: false,
+      error: "An error occurred while updating the product",
+    });
+  }
+};
+
+// ******* DELETE PRODUCT *******
+module.exports.deleteProduct = async (req, res) => {
+  try {
+    const { productTag } = req.body;
+
+    // Validate product tag
+    if (!productTag) {
+      return res.status(400).json({
+        success: false,
+        error: "Please provide the product tag.",
+      });
+    }
+
+    // Find the product by tag within the seller's products array
+    const productIndex = req.user.product.findIndex(
+      (p) => p.productTag === productTag
+    );
+
+    if (productIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        error: "Product not found.",
+      });
+    }
+
+    // Remove the product from the array
+    req.user.product.splice(productIndex, 1);
+
+    // Save the seller with the removed product
+    await req.user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Product deleted successfully.",
+    });
+  } catch (error) {
+    // console.log(error);
+    return res.status(500).json({
+      success: false,
+      error: "An error occurred while deleting the product",
+    });
   }
 };
 
