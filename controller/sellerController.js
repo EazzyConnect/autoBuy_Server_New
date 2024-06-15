@@ -88,10 +88,46 @@ module.exports.signUp = async (req, res) => {
 // ******* ADD PRODUCT ********
 module.exports.addProduct = async (req, res) => {
   try {
-    const { productName, productDesc, productImg } = req.body;
+    const {
+      name,
+      category,
+      shortDescription,
+      longDescription,
+      costPrice,
+      sellingPrice,
+      color,
+      condition,
+      make,
+      model,
+      year,
+      milleage,
+      quantity,
+      discount,
+      discountType,
+      discountValue,
+      images,
+    } = req.body;
 
     // Validate product details
-    if (!productName || !productDesc || !productImg) {
+    if (
+      !name ||
+      !category ||
+      !shortDescription ||
+      !longDescription ||
+      !costPrice ||
+      !sellingPrice ||
+      !color ||
+      !condition ||
+      !make ||
+      !model ||
+      !year ||
+      !milleage ||
+      !quantity ||
+      !discount ||
+      !discountType ||
+      !discountValue ||
+      !images
+    ) {
       return res.status(400).json({
         success: false,
         error: "Please provide all product details",
@@ -100,15 +136,33 @@ module.exports.addProduct = async (req, res) => {
 
     // Generate a unique product tag
     // const productTag = (req.user.product.length + 1).toString();
-    const productPrefix = productName.substring(0, 3).toUpperCase();
-    const productTag = `${productPrefix}${req.user.product.length + 1}`;
+    const productPrefix = name.substring(0, 3).toUpperCase();
+    const productPrefix2 = make.substring(0, 2).toLowerCase();
+
+    const productTag = `${productPrefix}${productPrefix2}${
+      req.user.product.length + 1
+    }`;
 
     // Add product to seller's product array
     req.user.product.push({
       productTag,
-      productName,
-      productDesc,
-      productImg,
+      name,
+      category,
+      shortDescription,
+      longDescription,
+      costPrice,
+      sellingPrice,
+      color,
+      condition,
+      make,
+      model,
+      year,
+      milleage,
+      quantity,
+      discount,
+      discountType,
+      discountValue,
+      images,
     });
 
     // Save the seller with the new product
@@ -120,7 +174,7 @@ module.exports.addProduct = async (req, res) => {
       product: req.user.product[req.user.product.length - 1],
     });
   } catch (error) {
-    // console.log(error);
+    console.log(error);
     return res.status(500).json({
       success: false,
       error: "An error occurred while adding the product",
@@ -131,10 +185,48 @@ module.exports.addProduct = async (req, res) => {
 // EDIT PRODUCT
 module.exports.editProduct = async (req, res) => {
   try {
-    const { productTag, productName, productDesc, productImg } = req.body;
+    const {
+      productTag,
+      name,
+      category,
+      shortDescription,
+      longDescription,
+      costPrice,
+      sellingPrice,
+      color,
+      condition,
+      make,
+      model,
+      year,
+      milleage,
+      quantity,
+      discount,
+      discountType,
+      discountValue,
+      images,
+    } = req.body;
 
     // Validate product details
-    if (!productTag || !productName || !productDesc || !productImg) {
+    if (
+      !productTag ||
+      !name ||
+      !category ||
+      !shortDescription ||
+      !longDescription ||
+      !costPrice ||
+      !sellingPrice ||
+      !color ||
+      !condition ||
+      !make ||
+      !model ||
+      !year ||
+      !milleage ||
+      !quantity ||
+      !discount ||
+      !discountType ||
+      !discountValue ||
+      !images
+    ) {
       return res.status(400).json({
         success: false,
         error: "Please provide all product details",
@@ -152,12 +244,25 @@ module.exports.editProduct = async (req, res) => {
     }
 
     // Update product details
-    product.productName = productName;
-    product.productDesc = productDesc;
-    product.productImg = productImg;
-
-    // Save the seller with the updated product
-    await req.user.save();
+    (product.name = name),
+      (product.category = category),
+      (product.shortDescription = shortDescription),
+      (product.longDescription = longDescription),
+      (product.costPrice = costPrice),
+      (product.sellingPrice = sellingPrice),
+      (product.color = color),
+      (product.condition = condition),
+      (product.make = make),
+      (product.model = model),
+      (product.year = year),
+      (product.milleage = milleage),
+      (product.quantity = quantity),
+      (product.discount = discount),
+      (product.discountType = discountType),
+      (product.discountValue = discountValue),
+      (product.images = images),
+      // Save the seller with the updated product
+      await req.user.save();
 
     return res.status(200).json({
       success: true,
