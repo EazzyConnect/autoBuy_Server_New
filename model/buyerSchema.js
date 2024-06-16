@@ -3,10 +3,10 @@ const { isEmail, isStrongPassword } = require("validator");
 
 const buyerSchema = new Schema(
   {
-    firstName: {
+    fullName: {
       type: String,
     },
-    lastName: {
+    username: {
       type: String,
     },
     email: {
@@ -21,6 +21,35 @@ const buyerSchema = new Schema(
         isStrongPassword,
         "Password must be at least eight (8) characters and contain at least one (1) lowercase, one (1) uppercase, one (1) number and one (1) symbol ",
       ],
+    },
+    presentAddress: {
+      type: String,
+    },
+    permanentAddress: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    postalCode: {
+      type: String,
+    },
+    country: {
+      type: String,
+    },
+    language: {
+      type: String,
+    },
+    timeZone: {
+      type: String,
+    },
+    emailNotification: {
+      type: Boolean,
+      default: false,
+    },
+    pushNotification: {
+      type: Boolean,
+      default: false,
     },
     role: {
       type: String,

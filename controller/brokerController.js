@@ -1,8 +1,8 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const Broker = require("../model/brokerSchema");
 const { validationResult } = require("express-validator");
 const { sendBrokerOTPEmail, recoverPassworOTP } = require("./otpController");
-const Broker = require("../model/brokerSchema");
 
 // ******* PASSWORD VALIDATOR ************
 const passwordRegex =
@@ -82,4 +82,28 @@ module.exports.signUp = async (req, res) => {
     console.log(error);
     return res.json(error.message);
   }
+};
+
+module.exports.brokerProfile = async (req, res) => {
+  // Check for the user with the user ID
+  const user = await Broker.findById({ _id: req.broker._id });
+  if (!user) {
+    return res
+      .status(401)
+      .json({ error: "⚠️ Authentication Failed", success: false });
+  }
+
+  // If user is available, destructure the user to take away some information
+  const {
+    password: hashedPassword,
+    _id,
+    __v,
+    active,
+    approved,
+    createdAt,
+    updatedAt,
+    lastChangedPassword,
+    ...others
+  } = user._doc;
+  return res.status(200).json({ responseMessage: others, success: true });
 };

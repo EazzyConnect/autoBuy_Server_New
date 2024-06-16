@@ -44,7 +44,7 @@ module.exports.authorizedBuyer = async (req, res, next) => {
     req.buyer = buyer;
     next();
   } catch (error) {
-    console.log("B.M.Error: ", error.message);
+    // console.log("B.M.Error: ", error.message);
     return res.json({ error: "An error occured", success: false });
   }
 };

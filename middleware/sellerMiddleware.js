@@ -14,8 +14,8 @@ module.exports.authorizedSeller = async (req, res, next) => {
 
     // Verify the token
     const decodedData = jwt.verify(token, process.env.SECRET_KEY);
-    const user = await Seller.findById(decodedData._id);
-    if (!user) {
+    const seller = await Seller.findById(decodedData._id);
+    if (!seller) {
       return res.status(401).json({
         error: "⚠️ Authentication Failed, please log in",
         success: false,
@@ -24,7 +24,7 @@ module.exports.authorizedSeller = async (req, res, next) => {
 
     // Check if token is still valid
     const iat = decodedData.iat * 1000;
-    const updated = new Date(user.lastChangedPassword).getTime();
+    const updated = new Date(seller.lastChangedPassword).getTime();
     if (iat < updated) {
       return res
         .status(401)
@@ -32,8 +32,8 @@ module.exports.authorizedSeller = async (req, res, next) => {
     }
 
     // Check if user is active
-    const activeUser = (await user.active) === true;
-    if (!activeUser) {
+    const activeSeller = (await seller.active) === true;
+    if (!activeSeller) {
       return res.status(401).json({
         error:
           "⚠️ Your account has been deactivated. Please contact customer support",
@@ -41,7 +41,7 @@ module.exports.authorizedSeller = async (req, res, next) => {
       });
     }
 
-    req.user = user;
+    req.seller = seller;
     next();
   } catch (error) {
     return res.json({ error: error.message, success: false });

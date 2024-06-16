@@ -8,6 +8,7 @@ const {
   addProduct,
   editProduct,
   deleteProduct,
+  sellerProfile,
 } = require("../controller/sellerController");
 const { verifySellerOTP } = require("../controller/otpController");
 const { authorizedSeller } = require("../middleware/sellerMiddleware");
@@ -19,6 +20,9 @@ router.post("/register", signUp);
 
 // ***** VERIFY EMAIL ROUTE *********
 router.post("/verification", verifySellerOTP);
+
+// ***** PROFILE ******
+router.get("/profile", authorizedSeller, sellerProfile);
 
 // ***** ADD PRODUCT ********
 router.post("/add-product", authorizedSeller, addProduct);

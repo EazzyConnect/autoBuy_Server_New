@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const { signUp } = require("../controller/buyerController");
+const { signUp, buyerProfile } = require("../controller/buyerController");
 const { verifyBuyerOTP } = require("../controller/otpController");
+const { authorizedBuyer } = require("../middleware/buyerMiddleware");
 
 router.use(express.json());
 
@@ -10,5 +11,8 @@ router.post("/register", signUp);
 
 // ***** VERIFY EMAIL ROUTE *********
 router.post("/verification", verifyBuyerOTP);
+
+// ***** PROFILE ******
+router.get("/profile", authorizedBuyer, buyerProfile);
 
 module.exports = router;

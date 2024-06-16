@@ -56,3 +56,27 @@ module.exports.signUp = async (req, res) => {
     return res.json(error.message);
   }
 };
+
+module.exports.adminProfile = async (req, res) => {
+  // Check for the user with the user ID
+  const user = await Admin.findById({ _id: req.admin._id });
+  if (!user) {
+    return res
+      .status(401)
+      .json({ error: "⚠️ Authentication Failed", success: false });
+  }
+
+  // If user is available, destructure the user to take away some information
+  const {
+    password: hashedPassword,
+    _id,
+    __v,
+    active,
+    approved,
+    createdAt,
+    updatedAt,
+    lastChangedPassword,
+    ...others
+  } = user._doc;
+  return res.status(200).json({ responseMessage: others, success: true });
+};

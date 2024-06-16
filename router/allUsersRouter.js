@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const usersLogin = require("../controller/login");
+const { usersLogin, usersLogout } = require("../controller/login_logout");
 const {
   resendOTP,
   forgotPassword,
@@ -11,6 +11,9 @@ router.use(express.json());
 
 // ********* LOGIN ROUTE ************
 router.post("/login", usersLogin);
+
+// ******** LOGOUT ********
+router.post("/logout", usersLogout);
 
 // ******** RESEND OTP *************
 router.get("/resendotp", resendOTP);

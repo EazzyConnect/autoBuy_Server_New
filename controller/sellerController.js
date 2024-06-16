@@ -85,6 +85,31 @@ module.exports.signUp = async (req, res) => {
   }
 };
 
+// ****** PROFILE ********
+module.exports.sellerProfile = async (req, res) => {
+  // Check for the user with the user ID
+  const user = await Seller.findById({ _id: req.seller._id });
+  if (!user) {
+    return res
+      .status(401)
+      .json({ error: "⚠️ Authentication Failed", success: false });
+  }
+
+  // If user is available, destructure the user to take away some information
+  const {
+    password: hashedPassword,
+    _id,
+    __v,
+    active,
+    approved,
+    createdAt,
+    updatedAt,
+    lastChangedPassword,
+    ...others
+  } = user._doc;
+  return res.status(200).json({ responseMessage: others, success: true });
+};
+
 // ******* ADD PRODUCT ********
 module.exports.addProduct = async (req, res) => {
   try {
@@ -170,11 +195,11 @@ module.exports.addProduct = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: "Product added successfully.",
+      responseMessage: "Product added successfully.",
       product: req.user.product[req.user.product.length - 1],
     });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return res.status(500).json({
       success: false,
       error: "An error occurred while adding the product",
@@ -266,7 +291,7 @@ module.exports.editProduct = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Product updated successfully",
+      responseMessage: "Product updated successfully",
       product: product,
     });
   } catch (error) {
@@ -311,7 +336,7 @@ module.exports.deleteProduct = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Product deleted successfully.",
+      responseMessage: "Product deleted successfully.",
     });
   } catch (error) {
     // console.log(error);
