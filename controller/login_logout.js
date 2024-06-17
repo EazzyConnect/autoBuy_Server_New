@@ -64,26 +64,27 @@ module.exports.usersLogin = async (req, res) => {
     res.cookie("auth", token, {
       expires: expireDate,
       secure: true,
-      httpOnly: true,
+      // httpOnly: true,
+      sameSite: "none",
     });
-
-    // Redirect based on user role
-    switch (user.role) {
-      case "Buyer":
-        return res.redirect("/buyer/profile");
-      case "Seller":
-        return res.redirect("/seller/profile");
-      case "Broker":
-        return res.redirect("/broker/profile");
-      case "Admin":
-        return res.redirect("/admin/profile");
-      default:
-        return res
-          .status(500)
-          .json({ error: "⚠️ Invalid user role", success: false });
-    }
+    // console.log(`LoginToken: `, token);
+    const {
+      password: hashedPassword,
+      _id,
+      __v,
+      active,
+      approved,
+      createdAt,
+      updatedAt,
+      lastChangedPassword,
+      ...others
+    } = user._doc;
+    // console.log(`user:`, others);
+    return res
+      .status(200)
+      .json({ responseMessage: others, token: token, success: true });
   } catch (error) {
-    // console.log(error);
+    console.log(error);
     return res
       .status(500)
       .json({ message: "An error occurred", success: false });

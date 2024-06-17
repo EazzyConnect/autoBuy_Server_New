@@ -27,7 +27,7 @@ const transporter = nodemailer.createTransport({
 // ******** BUYER SESSION *********
 
 // ******** SEND OTP (BUYER) ************
-module.exports.sendBuyerOTPEmail = async (user, res) => {
+module.exports.sendBuyerOTPEmail = async (user, res, token) => {
   const { _id, email } = user;
   try {
     // Generate OTP
@@ -65,6 +65,7 @@ module.exports.sendBuyerOTPEmail = async (user, res) => {
     return res.status(200).json({
       success: true,
       message: `Verification OTP email sent to ${email}`,
+      token: token,
     });
   } catch (error) {
     res.status(400).json({
@@ -154,7 +155,10 @@ module.exports.verifyBuyerOTP = async (req, res) => {
     }
 
     // Confirm token existence
-    const token = req.cookies.auth;
+    // const token = req.cookies.auth;
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(" ")[1];
+    // console.log(`verToken:`, token);
 
     if (!token) {
       return res.status(401).json({

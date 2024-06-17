@@ -4,12 +4,20 @@ const jwt = require("jsonwebtoken");
 // ******* BUSINESS OWNER MIDDLEWARE **********
 module.exports.authorizedBuyer = async (req, res, next) => {
   try {
-    // Check the available token
-    const token = req.cookies.auth;
+    // Check the available token from cookies or headers
+    let token;
+
+    if (req.cookies.auth) {
+      token = req.cookies.auth;
+    } else if (req.headers.authorization) {
+      const authHeader = req.headers.authorization;
+      token = authHeader.split(" ")[1];
+    }
+
     if (!token) {
       return res
         .status(401)
-        .json({ error: "⚠️ Session expired, please login", success: false });
+        .json({ error: "⚠️ Session expired, please login@", success: false });
     }
 
     // Verify the token
@@ -44,7 +52,6 @@ module.exports.authorizedBuyer = async (req, res, next) => {
     req.buyer = buyer;
     next();
   } catch (error) {
-    // console.log("B.M.Error: ", error.message);
     return res.json({ error: "An error occured", success: false });
   }
 };

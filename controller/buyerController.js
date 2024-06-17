@@ -1,9 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { validationResult } = require("express-validator");
 const Buyer = require("../model/buyerSchema");
-const BuyerOTP = require("../model/otpSchema");
-const { sendBuyerOTPEmail, recoverPassworOTP } = require("./otpController");
+const { sendBuyerOTPEmail } = require("./otpController");
 
 // ******* PASSWORD VALIDATOR ************
 const passwordRegex =
@@ -58,21 +56,22 @@ module.exports.signUp = async (req, res) => {
     // const expiresIn = 360 * 1000;
     const expiresIn = 3600000;
 
-    // Create a token
+    // // Create a token
     const token = jwt.sign({ _id: newBuyer._id }, process.env.SECRET_KEY, {
       expiresIn,
     });
 
-    // Set the token as cookie. // maxAge is in milliseconds
+    // // Set the token as cookie. // maxAge is in milliseconds
     res.cookie("auth", token, {
       maxAge: expiresIn,
       // httpOnly: true,
       secure: true,
+      sameSite: "none",
     });
 
     // Send OTP if registration is succesfull
     if (newBuyer) {
-      await sendBuyerOTPEmail(newBuyer, res);
+      await sendBuyerOTPEmail(newBuyer, res, token);
       return res.status(201);
     } else {
       return res

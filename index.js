@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 // const helmet = require("helmet");
-// const path = require("path");
+const path = require("path");
 const dbConnection = require("./model/dbConfig");
 const buyerRouter = require("./router/buyerRouter");
 const sellerRouter = require("./router/sellerRouter");
@@ -29,10 +29,12 @@ app.use("/broker", brokerRouter);
 app.use("/admin", adminRouter);
 app.use("/users", allUsersRouter);
 
-// // Render client
-// app.get("*", (req, res) =>
-//   res.sendFile(path.join(__dirname, "views", "public", "index.html"))
-// );
+app.use(express.static(path.join(__dirname, "client/dist")));
+
+// Render client
+app.get("*", (req, res) =>
+  res.sendFile(path.join(__dirname, "client/dist/index.html"))
+);
 
 // app.get("/all", (req, res) => {
 //   return res.send("Hello world");
