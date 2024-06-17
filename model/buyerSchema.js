@@ -3,10 +3,16 @@ const { isEmail, isStrongPassword } = require("validator");
 
 const buyerSchema = new Schema(
   {
-    fullName: {
+    // fullName: {
+    //   type: String,
+    // },
+    // username: {
+    //   type: String,
+    // },
+    firstName: {
       type: String,
     },
-    username: {
+    lastName: {
       type: String,
     },
     email: {

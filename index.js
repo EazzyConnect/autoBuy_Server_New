@@ -2,7 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const helmet = require("helmet");
+// const helmet = require("helmet");
 // const path = require("path");
 const dbConnection = require("./model/dbConfig");
 const buyerRouter = require("./router/buyerRouter");
@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors());
-app.use(helmet());
+// app.use(helmet());
 // app.use(express.static(path.join(__dirname, "views", "public")));
 
 // Use router

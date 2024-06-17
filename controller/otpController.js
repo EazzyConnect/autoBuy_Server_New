@@ -189,7 +189,9 @@ module.exports.verifyBuyerOTP = async (req, res) => {
 
       // checking if OTP has expired or not
       if (expiresAt < Date.now()) {
-        await BuyerOTP.deleteMany({ userId: user_Id } || { email: userEmail });
+        await BuyerOTP.deleteMany({
+          $or: [{ userId: user_Id }, { email: userEmail }],
+        });
         return res.status(400).json({
           success: false,
           error: "OTP code has expired, please request again.",
@@ -208,11 +210,11 @@ module.exports.verifyBuyerOTP = async (req, res) => {
             { $set: { approved: true } }
           );
 
-          if (updateUser) {
+          if (updateUser.modifiedCount > 0) {
             // Delete the OTP from db
-            await BuyerOTP.deleteMany(
-              { userId: user_Id } || { email: userEmail }
-            );
+            await BuyerOTP.deleteMany({
+              $or: [{ userId: user_Id }, { email: userEmail }],
+            });
             return res.status(200).json({
               success: true,
               message: "User email verified successfully.",
