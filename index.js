@@ -29,12 +29,12 @@ app.use("/broker", brokerRouter);
 app.use("/admin", adminRouter);
 app.use("/users", allUsersRouter);
 
-app.use(express.static(path.join(__dirname, "client/dist")));
+// app.use(express.static(path.join(__dirname, "client/dist")));
 
-// Render client
-app.get("*", (req, res) =>
-  res.sendFile(path.join(__dirname, "client/dist/index.html"))
-);
+// // Render client
+// app.get("*", (req, res) =>
+//   res.sendFile(path.join(__dirname, "client/dist/index.html"))
+// );
 
 // app.get("/all", (req, res) => {
 //   return res.send("Hello world");
