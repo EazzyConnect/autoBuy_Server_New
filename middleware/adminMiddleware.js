@@ -4,8 +4,16 @@ const jwt = require("jsonwebtoken");
 // ******* BUSINESS OWNER MIDDLEWARE **********
 module.exports.adminOnly = async (req, res, next) => {
   try {
-    // Check the available token
-    const token = req.cookies.auth;
+    // Check the available token from cookies or headers
+    let token;
+
+    if (req.cookies.auth) {
+      token = req.cookies.auth;
+    } else if (req.headers.authorization) {
+      const authHeader = req.headers.authorization;
+      token = authHeader.split(" ")[1];
+    }
+
     if (!token) {
       return res
         .status(401)
