@@ -135,6 +135,7 @@ module.exports.recoverBuyerPasswordOTP = async (user, res) => {
     return res.status(200).json({
       success: true,
       message: `OTP email sent to ${email}`,
+      token: token,
     });
   } catch (error) {
     res.status(400).json({
@@ -235,7 +236,7 @@ module.exports.verifyBuyerOTP = async (req, res) => {
 // ******** SELLER SESSION *********
 
 // ******** SEND OTP (SELLER) ************
-module.exports.sendSellerOTPEmail = async (user, res) => {
+module.exports.sendSellerOTPEmail = async (user, res, token) => {
   const { _id, email } = user;
   try {
     // Generate OTP
@@ -273,6 +274,7 @@ module.exports.sendSellerOTPEmail = async (user, res) => {
     return res.status(200).json({
       success: true,
       message: `Verification OTP email sent to ${email}`,
+      token: token,
     });
   } catch (error) {
     res.status(400).json({
@@ -342,6 +344,7 @@ module.exports.recoverSellerPasswordOTP = async (user, res) => {
     return res.status(200).json({
       success: true,
       message: `OTP email sent to ${email}`,
+      token: token,
     });
   } catch (error) {
     res.status(400).json({
@@ -362,7 +365,9 @@ module.exports.verifySellerOTP = async (req, res) => {
     }
 
     // Confirm token existence
-    const token = req.cookies.auth;
+    // const token = req.cookies.auth;
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(" ")[1];
 
     if (!token) {
       return res.status(401).json({
@@ -437,7 +442,7 @@ module.exports.verifySellerOTP = async (req, res) => {
 // ******** BROKER SESSION *********
 
 // ******** SEND OTP (BROKER) ************
-module.exports.sendBrokerOTPEmail = async (user, res) => {
+module.exports.sendBrokerOTPEmail = async (user, res, token) => {
   const { _id, email } = user;
   try {
     // Generate OTP
@@ -475,6 +480,7 @@ module.exports.sendBrokerOTPEmail = async (user, res) => {
     return res.status(200).json({
       success: true,
       message: `Verification OTP email sent to ${email}`,
+      token: token,
     });
   } catch (error) {
     res.status(400).json({
@@ -544,6 +550,7 @@ module.exports.recoverBrokerPasswordOTP = async (user, res) => {
     return res.status(200).json({
       success: true,
       message: `OTP email sent to ${email}`,
+      token: token,
     });
   } catch (error) {
     res.status(400).json({
@@ -564,7 +571,9 @@ module.exports.verifyBrokerOTP = async (req, res) => {
     }
 
     // Confirm token existence
-    const token = req.cookies.auth;
+    // const token = req.cookies.auth;
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(" ")[1];
 
     if (!token) {
       return res.status(401).json({
@@ -841,7 +850,9 @@ module.exports.verifyBrokerOTP = async (req, res) => {
 module.exports.resendOTP = async (req, res) => {
   try {
     // Confirm token existence
-    const token = req.cookies.auth;
+    // const token = req.cookies.auth;
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(" ")[1];
 
     if (!token) {
       return res.status(401).json({
@@ -1033,7 +1044,9 @@ module.exports.changePasswordOTP = async (req, res) => {
     }
 
     // Confirm token existence
-    const token = req.cookies.auth;
+    // const token = req.cookies.auth;
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(" ")[1];
 
     if (!token) {
       return res.status(401).json({

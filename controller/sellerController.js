@@ -72,7 +72,7 @@ module.exports.signUp = async (req, res) => {
 
     // Send OTP if registration is succesfull
     if (newSeller) {
-      await sendSellerOTPEmail(newSeller, res);
+      await sendSellerOTPEmail(newSeller, res, token);
       return res.status(201);
     } else {
       return res
