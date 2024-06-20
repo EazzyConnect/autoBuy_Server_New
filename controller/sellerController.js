@@ -160,16 +160,16 @@ module.exports.addProduct = async (req, res) => {
     }
 
     // Generate a unique product tag
-    // const productTag = (req.user.product.length + 1).toString();
+    // const productTag = (req.seller.product.length + 1).toString();
     const productPrefix = name.substring(0, 3).toUpperCase();
     const productPrefix2 = make.substring(0, 2).toLowerCase();
 
     const productTag = `${productPrefix}${productPrefix2}${
-      req.user.product.length + 1
+      req.seller.product.length + 1
     }`;
 
     // Add product to seller's product array
-    req.user.product.push({
+    req.seller.product.push({
       productTag,
       name,
       category,
@@ -191,15 +191,15 @@ module.exports.addProduct = async (req, res) => {
     });
 
     // Save the seller with the new product
-    await req.user.save();
+    await req.seller.save();
 
     return res.status(201).json({
       success: true,
       responseMessage: "Product added successfully.",
-      product: req.user.product[req.user.product.length - 1],
+      product: req.seller.product[req.seller.product.length - 1],
     });
   } catch (error) {
-    // console.log(error);
+    console.log(error);
     return res.status(500).json({
       success: false,
       error: "An error occurred while adding the product",
@@ -259,7 +259,7 @@ module.exports.editProduct = async (req, res) => {
     }
 
     // Find the product by tag within the seller's products array
-    const product = req.user.product.find((p) => p.productTag === productTag);
+    const product = req.seller.product.find((p) => p.productTag === productTag);
 
     if (!product) {
       return res.status(404).json({
@@ -287,7 +287,7 @@ module.exports.editProduct = async (req, res) => {
       (product.discountValue = discountValue),
       (product.images = images),
       // Save the seller with the updated product
-      await req.user.save();
+      await req.seller.save();
 
     return res.status(200).json({
       success: true,
@@ -317,7 +317,7 @@ module.exports.deleteProduct = async (req, res) => {
     }
 
     // Find the product by tag within the seller's products array
-    const productIndex = req.user.product.findIndex(
+    const productIndex = req.seller.product.findIndex(
       (p) => p.productTag === productTag
     );
 
@@ -329,10 +329,10 @@ module.exports.deleteProduct = async (req, res) => {
     }
 
     // Remove the product from the array
-    req.user.product.splice(productIndex, 1);
+    req.seller.product.splice(productIndex, 1);
 
     // Save the seller with the removed product
-    await req.user.save();
+    await req.seller.save();
 
     return res.status(200).json({
       success: true,
