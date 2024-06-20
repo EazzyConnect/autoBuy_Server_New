@@ -157,9 +157,19 @@ module.exports.verifyBuyerOTP = async (req, res) => {
 
     // Confirm token existence
     // const token = req.cookies.auth;
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(" ")[1];
-    // console.log(`verToken:`, token);
+
+    // const authHeader = req.headers.authorization;
+    // const token = authHeader && authHeader.split(" ")[1];
+
+    // Check the available token from cookies or headers
+    let token;
+
+    if (req.cookies.auth) {
+      token = req.cookies.auth;
+    } else if (req.headers.authorization) {
+      const authHeader = req.headers.authorization;
+      token = authHeader.split(" ")[1];
+    }
 
     if (!token) {
       return res.status(401).json({
@@ -366,8 +376,19 @@ module.exports.verifySellerOTP = async (req, res) => {
 
     // Confirm token existence
     // const token = req.cookies.auth;
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(" ")[1];
+
+    // const authHeader = req.headers.authorization;
+    // const token = authHeader && authHeader.split(" ")[1];
+
+    // Check the available token from cookies or headers
+    let token;
+
+    if (req.cookies.auth) {
+      token = req.cookies.auth;
+    } else if (req.headers.authorization) {
+      const authHeader = req.headers.authorization;
+      token = authHeader.split(" ")[1];
+    }
 
     if (!token) {
       return res.status(401).json({
@@ -572,8 +593,19 @@ module.exports.verifyBrokerOTP = async (req, res) => {
 
     // Confirm token existence
     // const token = req.cookies.auth;
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(" ")[1];
+
+    // const authHeader = req.headers.authorization;
+    // const token = authHeader && authHeader.split(" ")[1];
+
+    // Check the available token from cookies or headers
+    let token;
+
+    if (req.cookies.auth) {
+      token = req.cookies.auth;
+    } else if (req.headers.authorization) {
+      const authHeader = req.headers.authorization;
+      token = authHeader.split(" ")[1];
+    }
 
     if (!token) {
       return res.status(401).json({
@@ -849,10 +881,15 @@ module.exports.verifyBrokerOTP = async (req, res) => {
 
 module.exports.resendOTP = async (req, res) => {
   try {
-    // Confirm token existence
-    // const token = req.cookies.auth;
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(" ")[1];
+    // Check the available token from cookies or headers
+    let token;
+
+    if (req.cookies.auth) {
+      token = req.cookies.auth;
+    } else if (req.headers.authorization) {
+      const authHeader = req.headers.authorization;
+      token = authHeader.split(" ")[1];
+    }
 
     if (!token) {
       return res.status(401).json({
@@ -863,7 +900,7 @@ module.exports.resendOTP = async (req, res) => {
 
     // Verifying and decoding the token
     const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-    console.log(`decoded: `, decodedToken);
+    // console.log(`decoded: `, decodedToken);
 
     // Extracting items from the decoded token
     const user_Id = decodedToken._id;
@@ -954,7 +991,7 @@ module.exports.resendOTP = async (req, res) => {
       }
     }
   } catch (error) {
-    console.log(`err: `, error.message);
+    // console.log(`err: `, error.message);
     res.status(403).json({ success: false, message: "An error occurred" });
   }
 };
@@ -1045,8 +1082,19 @@ module.exports.changePasswordOTP = async (req, res) => {
 
     // Confirm token existence
     // const token = req.cookies.auth;
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(" ")[1];
+
+    // const authHeader = req.headers.authorization;
+    // const token = authHeader && authHeader.split(" ")[1];
+
+    // Check the available token from cookies or headers
+    let token;
+
+    if (req.cookies.auth) {
+      token = req.cookies.auth;
+    } else if (req.headers.authorization) {
+      const authHeader = req.headers.authorization;
+      token = authHeader.split(" ")[1];
+    }
 
     if (!token) {
       return res.status(401).json({
