@@ -163,10 +163,15 @@ module.exports.addProduct = async (req, res) => {
     // const productTag = (req.seller.product.length + 1).toString();
     const productPrefix = name.substring(0, 3).toUpperCase();
     const productPrefix2 = make.substring(0, 2).toLowerCase();
+    const productPrefix3 = shortDescription.substring(0, 4).toLowerCase();
+    const productPrefix4 = longDescription.substring(0, 5).toLowerCase();
 
-    const productTag = `${productPrefix}${productPrefix2}${
-      req.seller.product.length + 1
-    }`;
+    const productTagName = `${productPrefix}${productPrefix4}${
+      req.seller.product.length + 19
+    }${productPrefix3}${productPrefix2}${req.seller.product.length + 1}`;
+
+    // Trim white spaces
+    const productTag = productTagName.trim().replace(/ /g, "");
 
     // Add product to seller's product array
     req.seller.product.push({
