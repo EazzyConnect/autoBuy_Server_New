@@ -35,7 +35,7 @@ module.exports.sendBuyerOTPEmail = async (user, res, token) => {
 
     // Construct the mail to be sent to user
     const mailOptions = {
-      from: process.env.AUTH_EMAIL,
+      from: '"AutoBuy" <process.env.AUTH_EMAIL>',
       to: email,
       subject: "Verify Your Email",
       html: `<p> Enter this OTP code: <b>${otp}</b> to verify your email address: <b>${email}</b> and complete signing up. </p>
@@ -84,7 +84,7 @@ module.exports.recoverBuyerPasswordOTP = async (user, res) => {
 
     // Construct the mail to be sent to user
     const mailOptions = {
-      from: process.env.AUTH_EMAIL,
+      from: '"AutoBuy" <process.env.AUTH_EMAIL>',
       to: email,
       subject: "Recover Your Account",
       html: `<p> Enter this OTP: <b>${otp}</b> to recover your account (<b>${email}</b>) and change your password. </p>
@@ -254,7 +254,7 @@ module.exports.sendSellerOTPEmail = async (user, res, token) => {
 
     // Construct the mail to be sent to user
     const mailOptions = {
-      from: process.env.AUTH_EMAIL,
+      from: '"AutoBuy" <process.env.AUTH_EMAIL>',
       to: email,
       subject: "Verify Your Email",
       html: `<p> Enter this OTP code: <b>${otp}</b> to verify your email address: <b>${email}</b> and complete signing up. </p>
@@ -303,7 +303,7 @@ module.exports.recoverSellerPasswordOTP = async (user, res) => {
 
     // Construct the mail to be sent to user
     const mailOptions = {
-      from: process.env.AUTH_EMAIL,
+      from: '"AutoBuy" <process.env.AUTH_EMAIL>',
       to: email,
       subject: "Recover Your Account",
       html: `<p> Enter this OTP: <b>${otp}</b> to recover your account (<b>${email}</b>) and change your password. </p>
@@ -471,7 +471,7 @@ module.exports.sendBrokerOTPEmail = async (user, res, token) => {
 
     // Construct the mail to be sent to user
     const mailOptions = {
-      from: process.env.AUTH_EMAIL,
+      from: '"AutoBuy" <process.env.AUTH_EMAIL>',
       to: email,
       subject: "Verify Your Email",
       html: `<p> Enter this OTP code: <b>${otp}</b> to verify your email address: <b>${email}</b> and complete signing up. </p>
@@ -520,7 +520,7 @@ module.exports.recoverBrokerPasswordOTP = async (user, res) => {
 
     // Construct the mail to be sent to user
     const mailOptions = {
-      from: process.env.AUTH_EMAIL,
+      from: '"AutoBuy" <process.env.AUTH_EMAIL>',
       to: email,
       subject: "Recover Your Account",
       html: `<p> Enter this OTP: <b>${otp}</b> to recover your account (<b>${email}</b>) and change your password. </p>
