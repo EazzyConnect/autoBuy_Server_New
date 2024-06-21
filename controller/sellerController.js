@@ -159,6 +159,14 @@ module.exports.addProduct = async (req, res) => {
       });
     }
 
+    // Check if req.seller exists
+    if (!req.seller) {
+      return res.status(400).json({
+        success: false,
+        error: "Seller information is missing",
+      });
+    }
+
     // Generate a unique product tag
     // const productTag = (req.seller.product.length + 1).toString();
     const productPrefix = name.substring(0, 3).toUpperCase();
@@ -198,13 +206,20 @@ module.exports.addProduct = async (req, res) => {
     });
 
     // Save the seller with the new product
-    await req.seller.save();
+    const addedProduct = await req.seller?.save();
 
-    return res.status(201).json({
-      success: true,
-      responseMessage: "Product added successfully.",
-      product: req.seller.product[req.seller.product.length - 1],
-    });
+    if (addedProduct) {
+      return res.status(201).json({
+        success: true,
+        responseMessage: "Product added successfully.",
+        product: req.seller.product[req.seller.product.length - 1],
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        error: "Product not added",
+      });
+    }
   } catch (error) {
     console.log(error);
     return res.status(500).json({
