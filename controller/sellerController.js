@@ -168,7 +168,9 @@ module.exports.addProduct = async (req, res) => {
 
     const productTagName = `${productPrefix}${productPrefix4}${
       req.seller.product.length + 19
-    }${productPrefix3}${productPrefix2}${req.seller.product.length + 1}`;
+    }${productPrefix3}${productPrefix2}${Math.floor(
+      1000 + Math.random() * 9000
+    )}${req.seller.product.length + 1}`;
 
     // Trim white spaces
     const productTag = productTagName.trim().replace(/ /g, "");
