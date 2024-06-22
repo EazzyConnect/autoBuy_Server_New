@@ -248,7 +248,7 @@ module.exports.addProduct = async (req, res) => {
       discount,
       discountType,
       discountValue,
-      // images,
+      images,
     } = req.body;
 
     // Validate product details
@@ -269,7 +269,7 @@ module.exports.addProduct = async (req, res) => {
       { field: "discount", value: discount },
       { field: "discountType", value: discountType },
       { field: "discountValue", value: discountValue },
-      // { field: "images", value: images },
+      { field: "images", value: images },
     ];
 
     // Validate product details
@@ -325,7 +325,7 @@ module.exports.addProduct = async (req, res) => {
       discount,
       discountType,
       discountValue,
-      // images,
+      images,
     });
 
     // Save the seller with the new product

@@ -41,7 +41,7 @@ const sellerSchema = new Schema(
         discount: { type: Boolean },
         discountType: { type: String },
         discountValue: { type: String },
-        // images: [{ type: String }],
+        images: [{ type: String }],
       },
     ],
     role: {
