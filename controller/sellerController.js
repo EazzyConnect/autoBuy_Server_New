@@ -111,6 +111,124 @@ module.exports.sellerProfile = async (req, res) => {
 };
 
 // ******* ADD PRODUCT ********
+// module.exports.addProduct = async (req, res) => {
+//   try {
+//     const {
+//       name,
+//       category,
+//       shortDescription,
+//       longDescription,
+//       costPrice,
+//       sellingPrice,
+//       color,
+//       condition,
+//       make,
+//       model,
+//       year,
+//       milleage,
+//       quantity,
+//       discount,
+//       discountType,
+//       discountValue,
+//       images,
+//     } = req.body;
+
+//     // Validate product details
+//     if (
+//       !name ||
+//       !category ||
+//       !shortDescription ||
+//       !longDescription ||
+//       !costPrice ||
+//       !sellingPrice ||
+//       !color ||
+//       !condition ||
+//       !make ||
+//       !model ||
+//       !year ||
+//       !milleage ||
+//       !quantity ||
+//       !discount ||
+//       !discountType ||
+//       !discountValue ||
+//       !images
+//     ) {
+//       return res.status(400).json({
+//         success: false,
+//         error: "Please provide all product details",
+//       });
+//     }
+
+//     // Check if req.seller exists
+//     if (!req.seller) {
+//       return res.status(400).json({
+//         success: false,
+//         error: "Seller information is missing",
+//       });
+//     }
+
+//     // Generate a unique product tag
+//     // const productTag = (req.seller.product.length + 1).toString();
+//     const productPrefix = name.substring(0, 3).toUpperCase();
+//     const productPrefix2 = make.substring(0, 2).toLowerCase();
+//     const productPrefix3 = shortDescription.substring(0, 4).toLowerCase();
+//     const productPrefix4 = longDescription.substring(0, 5).toLowerCase();
+
+//     const productTagName = `${productPrefix}${productPrefix4}${
+//       req.seller.product.length + 19
+//     }${productPrefix3}${productPrefix2}${Math.floor(
+//       1000 + Math.random() * 9000
+//     )}${req.seller.product.length + 1}`;
+
+//     // Trim white spaces
+//     const productTag = productTagName.trim().replace(/ /g, "");
+
+//     // Add product to seller's product array
+//     req.seller.product.push({
+//       productTag,
+//       name,
+//       category,
+//       shortDescription,
+//       longDescription,
+//       costPrice,
+//       sellingPrice,
+//       color,
+//       condition,
+//       make,
+//       model,
+//       year,
+//       milleage,
+//       quantity,
+//       discount,
+//       discountType,
+//       discountValue,
+//       images,
+//     });
+
+//     // Save the seller with the new product
+//     const addedProduct = await req.seller?.save();
+
+//     if (addedProduct) {
+//       return res.status(201).json({
+//         success: true,
+//         responseMessage: "Product added successfully.",
+//         product: req.seller.product[req.seller.product.length - 1],
+//       });
+//     } else {
+//       return res.status(400).json({
+//         success: false,
+//         error: "Product not added",
+//       });
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({
+//       success: false,
+//       error: "An error occurred while adding the product",
+//     });
+//   }
+// };
+
 module.exports.addProduct = async (req, res) => {
   try {
     const {
@@ -134,29 +252,34 @@ module.exports.addProduct = async (req, res) => {
     } = req.body;
 
     // Validate product details
-    if (
-      !name ||
-      !category ||
-      !shortDescription ||
-      !longDescription ||
-      !costPrice ||
-      !sellingPrice ||
-      !color ||
-      !condition ||
-      !make ||
-      !model ||
-      !year ||
-      !milleage ||
-      !quantity ||
-      !discount ||
-      !discountType ||
-      !discountValue ||
-      !images
-    ) {
-      return res.status(400).json({
-        success: false,
-        error: "Please provide all product details",
-      });
+    const requiredFields = [
+      { field: "name", value: name },
+      { field: "category", value: category },
+      { field: "shortDescription", value: shortDescription },
+      { field: "longDescription", value: longDescription },
+      { field: "costPrice", value: costPrice },
+      { field: "sellingPrice", value: sellingPrice },
+      { field: "color", value: color },
+      { field: "condition", value: condition },
+      { field: "make", value: make },
+      { field: "model", value: model },
+      { field: "year", value: year },
+      { field: "milleage", value: milleage },
+      { field: "quantity", value: quantity },
+      { field: "discount", value: discount },
+      { field: "discountType", value: discountType },
+      { field: "discountValue", value: discountValue },
+      { field: "images", value: images },
+    ];
+
+    // Validate product details
+    for (let i = 0; i < requiredFields.length; i++) {
+      if (!requiredFields[i].value) {
+        return res.status(400).json({
+          success: false,
+          error: `Please provide ${requiredFields[i].field}`,
+        });
+      }
     }
 
     // Check if req.seller exists
