@@ -248,7 +248,7 @@ module.exports.addProduct = async (req, res) => {
       discount,
       discountType,
       discountValue,
-      images,
+      // images,
     } = req.body;
 
     // Validate product details
@@ -269,7 +269,7 @@ module.exports.addProduct = async (req, res) => {
       { field: "discount", value: discount },
       { field: "discountType", value: discountType },
       { field: "discountValue", value: discountValue },
-      { field: "images", value: images },
+      // { field: "images", value: images },
     ];
 
     // Validate product details
@@ -290,8 +290,13 @@ module.exports.addProduct = async (req, res) => {
       });
     }
 
+    // Create image url
+    const imageUrls = req.files.map((file) => file.path);
+
     // Generate a unique product tag
+
     // const productTag = (req.seller.product.length + 1).toString();
+
     const productPrefix = name.substring(0, 3).toUpperCase();
     const productPrefix2 = make.substring(0, 2).toLowerCase();
     const productPrefix3 = shortDescription.substring(0, 4).toLowerCase();
@@ -325,7 +330,7 @@ module.exports.addProduct = async (req, res) => {
       discount,
       discountType,
       discountValue,
-      images,
+      images: imageUrls,
     });
 
     // Save the seller with the new product
@@ -344,7 +349,7 @@ module.exports.addProduct = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return res.status(500).json({
       success: false,
       error: "An error occurred while adding the product",
@@ -492,79 +497,52 @@ module.exports.deleteProduct = async (req, res) => {
   }
 };
 
-// ******* SIGN-IN (NOT USED) ***********
-// module.exports.login = async (req, res) => {
-//   const { email, password } = req.body;
+// ****** UPLOAD PHOTO *******
+module.exports.uploadPhoto = async (req, res) => {
+  try {
+    const { productTag } = req.body;
 
-//   // Check if expected user details are provided
-//   if (!email || !password) {
-//     return res
-//       .status(406)
-//       .json({ error: "⚠️ Provide all fields", success: false });
-//   }
+    // Check if file is provided
+    // req.file for single; req.files for multiple
+    if (!req.files || req.files.length === 0 || !productTag) {
+      return res.status(400).json({
+        success: false,
+        error: "Please provide a photo and its tag to upload",
+      });
+    }
 
-//   // Check for the user in the db
-//   const seller = await Seller.findOne({ email });
-//   if (!seller) {
-//     return res
-//       .status(401)
-//       .json({ error: "⚠️ Authentication Failed", success: false });
-//   }
+    // Find the product by tag within the seller's products array
+    const product = req.seller.product.find((p) => p.productTag === productTag);
 
-//   // Check if password is correct
-//   const checkPassword = await bcrypt.compare(password, seller.password);
-//   if (!checkPassword) {
-//     return res
-//       .status(401)
-//       .json({ error: "⚠️ Authentication Failed", success: false });
-//   }
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: "Product not found",
+      });
+    }
 
-//   // Check if user is approved
-//   const approvedUser = (await seller.approved) === true;
-//   if (!approvedUser) {
-//     return res.status(401).json({
-//       error: "⚠️ Please verify your email.",
-//       success: false,
-//     });
-//   }
+    // For single image
+    // const photoUrl = req.file.path;
+    // product.images.push(photoUrl);
 
-//   // Check if user is active
-//   const activeUser = (await seller.active) === true;
-//   if (!activeUser) {
-//     return res.status(401).json({
-//       error:
-//         "⚠️ Your account has been deactivated. Please contact customer support",
-//       success: false,
-//     });
-//   }
+    // For multiple images
+    req.files.forEach((file) => {
+      product.images.push(file.path);
+    });
 
-//   try {
-//     // Assign token and redirect to profile page
-//     const expireDate = new Date(Date.now() + 3600000); // 1-hour
-//     const token = jwt.sign({ _id: seller._id }, process.env.SECRET_KEY, {
-//       expiresIn: "1h",
-//     });
-//     res.cookie("auth", token, {
-//       expires: expireDate,
-//       secure: true,
-//       httpOnly: true,
-//     });
-//     // res.redirect("/user/profile");
-//     const {
-//       password: hashedPassword,
-//       _id,
-//       __v,
-//       active,
-//       approved,
-//       createdAt,
-//       updatedAt,
-//       lastChangedPassword,
-//       ...others
-//     } = seller._doc;
-//     return res.status(200).json({ data: others, success: true });
-//   } catch (error) {
-//     return res
-//       .status(500)
-//       .json({ message: "An error occured", success: false });
-//   }
-// };
+    await req.seller.save();
+
+    return res.status(201).json({
+      success: true,
+      responseMessage: "Photo uploaded successfully.",
+      // photoUrl: photoUrl,  // For single image
+      photoUrls: req.files.map((file) => file.path),
+    });
+  } catch (error) {
+    // console.log(error);
+    return res.status(500).json({
+      success: false,
+      error: "An error occurred while uploading the photo",
+    });
+  }
+};
