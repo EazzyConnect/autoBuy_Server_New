@@ -298,6 +298,8 @@ module.exports.addProduct = async (req, res) => {
       imageUrls = req.files.map((file) => file.path);
     }
 
+    console.log(`img: `, imageUrls);
+
     // Generate a unique product tag
 
     // const productTag = (req.seller.product.length + 1).toString();
