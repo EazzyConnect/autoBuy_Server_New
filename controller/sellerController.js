@@ -349,7 +349,7 @@ module.exports.addProduct = async (req, res) => {
       });
     }
   } catch (error) {
-    // console.log(error);
+    console.log(`ErrorUpload: `, error);
     return res.status(500).json({
       success: false,
       error: "An error occurred while adding the product",
@@ -539,7 +539,7 @@ module.exports.uploadPhoto = async (req, res) => {
       photoUrls: req.files.map((file) => file.path),
     });
   } catch (error) {
-    // console.log(error);
+    console.log(`ErrorUpload: `, error);
     return res.status(500).json({
       success: false,
       error: "An error occurred while uploading the photo",

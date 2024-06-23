@@ -17,7 +17,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "auto_buy_img", // Optional, specify the folder to store images
-    allowed_formats: ["jpg", "png", "webp"],
+    allowed_formats: ["jpg", "png", "webp", "jpeg", "gif"],
     public_id: (req, file) => `${Date.now()}-${file.originalname}`,
   },
 });
