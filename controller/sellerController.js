@@ -291,7 +291,12 @@ module.exports.addProduct = async (req, res) => {
     }
 
     // Create image url
-    const imageUrls = req.files.map((file) => file.path);
+    // const imageUrls = req.files.map((file) => file.path);
+
+    let imageUrls = [];
+    if (req.files && req.files.length > 0) {
+      imageUrls = req.files.map((file) => file.path);
+    }
 
     // Generate a unique product tag
 
