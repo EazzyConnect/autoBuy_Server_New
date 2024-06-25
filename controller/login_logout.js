@@ -56,10 +56,10 @@ module.exports.usersLogin = async (req, res) => {
       }
     }
 
-    // Assign token and set it as a cookie
-    const expireDate = new Date(Date.now() + 3600000); // 1-hour
+    // Set token and cookie to expire after 24hrs
+    const expireDate = new Date(Date.now() + 86400000); // 24-hour
     const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY, {
-      expiresIn: "1h",
+      expiresIn: "1d",
     });
     res.cookie("auth", token, {
       expires: expireDate,

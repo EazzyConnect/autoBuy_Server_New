@@ -87,27 +87,34 @@ module.exports.signUp = async (req, res) => {
 
 // ****** PROFILE ********
 module.exports.sellerProfile = async (req, res) => {
-  // Check for the user with the user ID
-  const user = await Seller.findById({ _id: req.seller._id });
-  if (!user) {
-    return res
-      .status(401)
-      .json({ error: "⚠️ Authentication Failed", success: false });
-  }
+  try {
+    // Check for the user with the user ID
+    const user = await Seller.findById({ _id: req.seller._id });
+    if (!user) {
+      return res
+        .status(401)
+        .json({ error: "⚠️ Authentication Failed", success: false });
+    }
 
-  // If user is available, destructure the user to take away some information
-  const {
-    password: hashedPassword,
-    _id,
-    __v,
-    active,
-    approved,
-    createdAt,
-    updatedAt,
-    lastChangedPassword,
-    ...others
-  } = user._doc;
-  return res.status(200).json({ responseMessage: others, success: true });
+    // If user is available, destructure the user to take away some information
+    const {
+      password: hashedPassword,
+      _id,
+      __v,
+      active,
+      approved,
+      createdAt,
+      updatedAt,
+      lastChangedPassword,
+      ...others
+    } = user._doc;
+    return res.status(200).json({ responseMessage: others, success: true });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: "An error occurred.",
+    });
+  }
 };
 
 // ******* ADD PRODUCT ********
@@ -356,7 +363,7 @@ module.exports.addProduct = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(`ErrorUpload: `, error);
+    // console.log(`ErrorUpload: `, error);
     return res.status(500).json({
       success: false,
       error: "An error occurred while adding the product",
@@ -385,7 +392,6 @@ module.exports.editProduct = async (req, res) => {
       discount,
       discountType,
       discountValue,
-      images,
     } = req.body;
 
     // Validate product details
@@ -406,8 +412,7 @@ module.exports.editProduct = async (req, res) => {
       !quantity ||
       !discount ||
       !discountType ||
-      !discountValue ||
-      !images
+      !discountValue
     ) {
       return res.status(400).json({
         success: false,
@@ -442,7 +447,6 @@ module.exports.editProduct = async (req, res) => {
       (product.discount = discount),
       (product.discountType = discountType),
       (product.discountValue = discountValue),
-      (product.images = images),
       // Save the seller with the updated product
       await req.seller.save();
 
@@ -452,7 +456,7 @@ module.exports.editProduct = async (req, res) => {
       product: product,
     });
   } catch (error) {
-    // console.log(error);
+    console.log(error);
     return res.status(500).json({
       success: false,
       error: "An error occurred while updating the product",
