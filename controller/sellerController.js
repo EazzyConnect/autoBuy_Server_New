@@ -395,29 +395,60 @@ module.exports.editProduct = async (req, res) => {
     } = req.body;
 
     // Validate product details
-    if (
-      !productTag ||
-      !name ||
-      !category ||
-      !shortDescription ||
-      !longDescription ||
-      !costPrice ||
-      !sellingPrice ||
-      !color ||
-      !condition ||
-      !make ||
-      !model ||
-      !year ||
-      !milleage ||
-      !quantity ||
-      !discount ||
-      !discountType ||
-      !discountValue
-    ) {
-      return res.status(400).json({
-        success: false,
-        error: "Please provide all product details",
-      });
+    // if (
+    //   !productTag ||
+    //   !name ||
+    //   !category ||
+    //   !shortDescription ||
+    //   !longDescription ||
+    //   !costPrice ||
+    //   !sellingPrice ||
+    //   !color ||
+    //   !condition ||
+    //   !make ||
+    //   !model ||
+    //   !year ||
+    //   !milleage ||
+    //   !quantity ||
+    //   !discount ||
+    //   !discountType ||
+    //   !discountValue
+    // ) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     error: "Please provide all product details",
+    //   });
+    // }
+
+    // Validate product details
+    const requiredFields = [
+      { field: "productTag", value: productTag },
+      { field: "name", value: name },
+      { field: "category", value: category },
+      { field: "shortDescription", value: shortDescription },
+      { field: "longDescription", value: longDescription },
+      { field: "costPrice", value: costPrice },
+      { field: "sellingPrice", value: sellingPrice },
+      { field: "color", value: color },
+      { field: "condition", value: condition },
+      { field: "make", value: make },
+      { field: "model", value: model },
+      { field: "year", value: year },
+      { field: "milleage", value: milleage },
+      { field: "quantity", value: quantity },
+      { field: "discount", value: discount },
+      { field: "discountType", value: discountType },
+      { field: "discountValue", value: discountValue },
+    ];
+
+    // Validate product details
+    for (let i = 0; i < requiredFields.length; i++) {
+      if (!requiredFields[i].value) {
+        return res.status(400).json({
+          success: false,
+          error: `Please provide ${requiredFields[i].field}`,
+        });
+      }
     }
 
     // Find the product by tag within the seller's products array
