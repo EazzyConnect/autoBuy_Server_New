@@ -10,6 +10,8 @@ const {
   deleteProduct,
   sellerProfile,
   uploadPhoto,
+  deletePhoto,
+  updateSellerProfile,
 } = require("../controller/sellerController");
 const { verifySellerOTP } = require("../controller/otpController");
 const { authorizedSeller } = require("../middleware/sellerMiddleware");
@@ -48,5 +50,11 @@ router.post(
   parser.array("images"),
   uploadPhoto
 );
+
+// ***** DELETE PHOTO ********
+router.delete("/delete-photo", authorizedSeller, deletePhoto);
+
+// ***** UPDATE PROFILE ********
+router.put("/edit-profile", authorizedSeller, updateSellerProfile);
 
 module.exports = router;

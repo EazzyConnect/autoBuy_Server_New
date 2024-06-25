@@ -118,124 +118,6 @@ module.exports.sellerProfile = async (req, res) => {
 };
 
 // ******* ADD PRODUCT ********
-// module.exports.addProduct = async (req, res) => {
-//   try {
-//     const {
-//       name,
-//       category,
-//       shortDescription,
-//       longDescription,
-//       costPrice,
-//       sellingPrice,
-//       color,
-//       condition,
-//       make,
-//       model,
-//       year,
-//       milleage,
-//       quantity,
-//       discount,
-//       discountType,
-//       discountValue,
-//       images,
-//     } = req.body;
-
-//     // Validate product details
-//     if (
-//       !name ||
-//       !category ||
-//       !shortDescription ||
-//       !longDescription ||
-//       !costPrice ||
-//       !sellingPrice ||
-//       !color ||
-//       !condition ||
-//       !make ||
-//       !model ||
-//       !year ||
-//       !milleage ||
-//       !quantity ||
-//       !discount ||
-//       !discountType ||
-//       !discountValue ||
-//       !images
-//     ) {
-//       return res.status(400).json({
-//         success: false,
-//         error: "Please provide all product details",
-//       });
-//     }
-
-//     // Check if req.seller exists
-//     if (!req.seller) {
-//       return res.status(400).json({
-//         success: false,
-//         error: "Seller information is missing",
-//       });
-//     }
-
-//     // Generate a unique product tag
-//     // const productTag = (req.seller.product.length + 1).toString();
-//     const productPrefix = name.substring(0, 3).toUpperCase();
-//     const productPrefix2 = make.substring(0, 2).toLowerCase();
-//     const productPrefix3 = shortDescription.substring(0, 4).toLowerCase();
-//     const productPrefix4 = longDescription.substring(0, 5).toLowerCase();
-
-//     const productTagName = `${productPrefix}${productPrefix4}${
-//       req.seller.product.length + 19
-//     }${productPrefix3}${productPrefix2}${Math.floor(
-//       1000 + Math.random() * 9000
-//     )}${req.seller.product.length + 1}`;
-
-//     // Trim white spaces
-//     const productTag = productTagName.trim().replace(/ /g, "");
-
-//     // Add product to seller's product array
-//     req.seller.product.push({
-//       productTag,
-//       name,
-//       category,
-//       shortDescription,
-//       longDescription,
-//       costPrice,
-//       sellingPrice,
-//       color,
-//       condition,
-//       make,
-//       model,
-//       year,
-//       milleage,
-//       quantity,
-//       discount,
-//       discountType,
-//       discountValue,
-//       images,
-//     });
-
-//     // Save the seller with the new product
-//     const addedProduct = await req.seller?.save();
-
-//     if (addedProduct) {
-//       return res.status(201).json({
-//         success: true,
-//         responseMessage: "Product added successfully.",
-//         product: req.seller.product[req.seller.product.length - 1],
-//       });
-//     } else {
-//       return res.status(400).json({
-//         success: false,
-//         error: "Product not added",
-//       });
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).json({
-//       success: false,
-//       error: "An error occurred while adding the product",
-//     });
-//   }
-// };
-
 module.exports.addProduct = async (req, res) => {
   try {
     const {
@@ -393,32 +275,6 @@ module.exports.editProduct = async (req, res) => {
       discountType,
       discountValue,
     } = req.body;
-
-    // Validate product details
-    // if (
-    //   !productTag ||
-    //   !name ||
-    //   !category ||
-    //   !shortDescription ||
-    //   !longDescription ||
-    //   !costPrice ||
-    //   !sellingPrice ||
-    //   !color ||
-    //   !condition ||
-    //   !make ||
-    //   !model ||
-    //   !year ||
-    //   !milleage ||
-    //   !quantity ||
-    //   !discount ||
-    //   !discountType ||
-    //   !discountValue
-    // ) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     error: "Please provide all product details",
-    //   });
-    // }
 
     // Validate product details
     const requiredFields = [
@@ -586,5 +442,114 @@ module.exports.uploadPhoto = async (req, res) => {
       success: false,
       error: "An error occurred while uploading the photo",
     });
+  }
+};
+
+// ****** DELETE PHOTO *******
+module.exports.deletePhoto = async (req, res) => {
+  try {
+    const { productTag, imageUrl } = req.body;
+
+    // Validate product details
+    const requiredFields = [
+      { field: "productTag", value: productTag },
+      { field: "imageUrl", value: imageUrl },
+    ];
+
+    // Validate product details
+    for (let i = 0; i < requiredFields.length; i++) {
+      if (!requiredFields[i].value) {
+        return res.status(400).json({
+          success: false,
+          error: `Please provide ${requiredFields[i].field}`,
+        });
+      }
+    }
+
+    // Find the product by tag within the seller's products array
+    const product = req.seller.product.find((p) => p.productTag === productTag);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: "Product not found",
+      });
+    }
+
+    // Find the index of the image to delete
+    const imageIndex = product.images.indexOf(imageUrl);
+    if (imageIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        error: "Image not found in product.",
+      });
+    }
+
+    // Remove the image from the array
+    product.images.splice(imageIndex, 1);
+
+    await req.seller.save();
+
+    return res.status(200).json({
+      success: true,
+      responseMessage: "Photo deleted successfully.",
+    });
+  } catch (error) {
+    console.error("ErrorDeletePhoto: ", error);
+    return res.status(500).json({
+      success: false,
+      error: "An error occurred while deleting the photo.",
+    });
+  }
+};
+
+// ****** USER SETTINGS: EDIT PROFILE *********
+module.exports.updateSellerProfile = async (req, res) => {
+  try {
+    // Check if req.seller exists
+    if (!req.seller) {
+      return res.status(400).json({
+        success: false,
+        error: "Seller information is missing",
+      });
+    }
+    const {
+      firstName,
+      lastName,
+      username,
+      permanentAddress,
+      presentAddress,
+      city,
+      town,
+    } = req.body;
+
+    if (firstName) req.seller.firstName = firstName;
+    if (lastName) req.seller.lastName = lastName;
+    if (permanentAddress) req.seller.permanentAddress = permanentAddress;
+    if (presentAddress) req.seller.presentAddress = presentAddress;
+    if (city) req.seller.city = city;
+    if (town) req.seller.town = town;
+    if (username) {
+      const checkUsername = await Seller.exists({ username });
+      if (checkUsername !== null) {
+        return res.status(406).json({
+          responseMessage: "Username already taken",
+          success: false,
+        });
+      }
+      req.seller.username = username;
+    }
+
+    const update = await req.seller.save();
+    if (update) {
+      return res
+        .status(200)
+        .json({ responseMessage: "Update successful", success: true });
+    }
+  } catch (error) {
+    console.error();
+    return res
+      .status(500)
+      .json({ responseMessage: "An error occured", success: false });
   }
 };

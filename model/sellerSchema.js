@@ -9,6 +9,9 @@ const sellerSchema = new Schema(
     lastName: {
       type: String,
     },
+    username: {
+      type: String,
+    },
     email: {
       type: String,
       required: [true, "Please provide email address"],
@@ -21,6 +24,18 @@ const sellerSchema = new Schema(
         isStrongPassword,
         "Password must be at least eight (8) characters and contain at least one (1) lowercase, one (1) uppercase, one (1) number and one (1) symbol ",
       ],
+    },
+    permanentAddress: {
+      type: String,
+    },
+    presentAddress: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    town: {
+      type: String,
     },
     product: [
       {
