@@ -37,7 +37,12 @@ router.post(
 );
 
 // ***** EDIT PRODUCT ********
-router.put("/edit-product", authorizedSeller, editProduct);
+router.put(
+  "/edit-product",
+  authorizedSeller,
+  parser.array("images"),
+  editProduct
+);
 
 // ***** DELETE PRODUCT ********
 router.delete("/delete-product", authorizedSeller, deleteProduct);

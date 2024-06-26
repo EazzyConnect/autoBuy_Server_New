@@ -187,8 +187,6 @@ module.exports.addProduct = async (req, res) => {
       imageUrls = req.files.map((file) => file.path);
     }
 
-    console.log(`img: `, imageUrls);
-
     // Generate a unique product tag
 
     // const productTag = (req.seller.product.length + 1).toString();
@@ -254,102 +252,102 @@ module.exports.addProduct = async (req, res) => {
 };
 
 // EDIT PRODUCT
-module.exports.editProduct = async (req, res) => {
-  try {
-    const {
-      productTag,
-      name,
-      category,
-      shortDescription,
-      longDescription,
-      costPrice,
-      sellingPrice,
-      color,
-      condition,
-      make,
-      model,
-      year,
-      milleage,
-      quantity,
-      discount,
-      discountType,
-      discountValue,
-    } = req.body;
+// module.exports.editProduct = async (req, res) => {
+//   try {
+//     const {
+//       productTag,
+//       name,
+//       category,
+//       shortDescription,
+//       longDescription,
+//       costPrice,
+//       sellingPrice,
+//       color,
+//       condition,
+//       make,
+//       model,
+//       year,
+//       milleage,
+//       quantity,
+//       discount,
+//       discountType,
+//       discountValue,
+//     } = req.body;
 
-    // Validate product details
-    const requiredFields = [
-      { field: "productTag", value: productTag },
-      { field: "name", value: name },
-      { field: "category", value: category },
-      { field: "shortDescription", value: shortDescription },
-      { field: "longDescription", value: longDescription },
-      { field: "costPrice", value: costPrice },
-      { field: "sellingPrice", value: sellingPrice },
-      { field: "color", value: color },
-      { field: "condition", value: condition },
-      { field: "make", value: make },
-      { field: "model", value: model },
-      { field: "year", value: year },
-      { field: "milleage", value: milleage },
-      { field: "quantity", value: quantity },
-      { field: "discount", value: discount },
-      { field: "discountType", value: discountType },
-      { field: "discountValue", value: discountValue },
-    ];
+//     // Validate product details
+//     const requiredFields = [
+//       { field: "productTag", value: productTag },
+//       { field: "name", value: name },
+//       { field: "category", value: category },
+//       { field: "shortDescription", value: shortDescription },
+//       { field: "longDescription", value: longDescription },
+//       { field: "costPrice", value: costPrice },
+//       { field: "sellingPrice", value: sellingPrice },
+//       { field: "color", value: color },
+//       { field: "condition", value: condition },
+//       { field: "make", value: make },
+//       { field: "model", value: model },
+//       { field: "year", value: year },
+//       { field: "milleage", value: milleage },
+//       { field: "quantity", value: quantity },
+//       { field: "discount", value: discount },
+//       { field: "discountType", value: discountType },
+//       { field: "discountValue", value: discountValue },
+//     ];
 
-    // Validate product details
-    for (let i = 0; i < requiredFields.length; i++) {
-      if (!requiredFields[i].value) {
-        return res.status(400).json({
-          success: false,
-          error: `Please provide ${requiredFields[i].field}`,
-        });
-      }
-    }
+//     // Validate product details
+//     for (let i = 0; i < requiredFields.length; i++) {
+//       if (!requiredFields[i].value) {
+//         return res.status(400).json({
+//           success: false,
+//           error: `Please provide ${requiredFields[i].field}`,
+//         });
+//       }
+//     }
 
-    // Find the product by tag within the seller's products array
-    const product = req.seller.product.find((p) => p.productTag === productTag);
+//     // Find the product by tag within the seller's products array
+//     const product = req.seller.product.find((p) => p.productTag === productTag);
 
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        error: "Product not found",
-      });
-    }
+//     if (!product) {
+//       return res.status(404).json({
+//         success: false,
+//         error: "Product not found",
+//       });
+//     }
 
-    // Update product details
-    (product.name = name),
-      (product.category = category),
-      (product.shortDescription = shortDescription),
-      (product.longDescription = longDescription),
-      (product.costPrice = costPrice),
-      (product.sellingPrice = sellingPrice),
-      (product.color = color),
-      (product.condition = condition),
-      (product.make = make),
-      (product.model = model),
-      (product.year = year),
-      (product.milleage = milleage),
-      (product.quantity = quantity),
-      (product.discount = discount),
-      (product.discountType = discountType),
-      (product.discountValue = discountValue),
-      // Save the seller with the updated product
-      await req.seller.save();
+//     // Update product details
+//     (product.name = name),
+//       (product.category = category),
+//       (product.shortDescription = shortDescription),
+//       (product.longDescription = longDescription),
+//       (product.costPrice = costPrice),
+//       (product.sellingPrice = sellingPrice),
+//       (product.color = color),
+//       (product.condition = condition),
+//       (product.make = make),
+//       (product.model = model),
+//       (product.year = year),
+//       (product.milleage = milleage),
+//       (product.quantity = quantity),
+//       (product.discount = discount),
+//       (product.discountType = discountType),
+//       (product.discountValue = discountValue),
+//       // Save the seller with the updated product
+//       await req.seller.save();
 
-    return res.status(200).json({
-      success: true,
-      responseMessage: "Product updated successfully",
-      product: product,
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      success: false,
-      error: "An error occurred while updating the product",
-    });
-  }
-};
+//     return res.status(200).json({
+//       success: true,
+//       responseMessage: "Product updated successfully",
+//       product: product,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({
+//       success: false,
+//       error: "An error occurred while updating the product",
+//     });
+//   }
+// };
 
 // ******* DELETE PRODUCT *******
 module.exports.deleteProduct = async (req, res) => {
@@ -551,5 +549,128 @@ module.exports.updateSellerProfile = async (req, res) => {
     return res
       .status(500)
       .json({ responseMessage: "An error occured", success: false });
+  }
+};
+
+// ****** EDIT PRODUCT FULLY *******
+module.exports.editProduct = async (req, res) => {
+  try {
+    const {
+      productTag,
+      name,
+      category,
+      shortDescription,
+      longDescription,
+      costPrice,
+      sellingPrice,
+      color,
+      condition,
+      make,
+      model,
+      year,
+      milleage,
+      quantity,
+      discount,
+      discountType,
+      discountValue,
+    } = req.body;
+
+    // This is for multiple imagesUrls.
+    // let deleteImages = [];
+    // if (req.body.deleteImages) {
+    //   try {
+    //     deleteImages = JSON.parse(req.body.deleteImages);
+    //   } catch (error) {
+    //     return res.status(400).json({
+    //       success: false,
+    //       error: "Invalid format for deleteImages. It should be a JSON array.",
+    //     });
+    //   }
+    // }
+
+    // Validate productTag
+    if (!productTag) {
+      return res.status(400).json({
+        success: false,
+        error: "Please provide productTag",
+      });
+    }
+
+    // Find the product by tag within the seller's products array
+    const product = req.seller.product.find((p) => p.productTag === productTag);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: "Product not found",
+      });
+    }
+
+    // Update product details if provided
+    if (name) product.name = name;
+    if (category) product.category = category;
+    if (shortDescription) product.shortDescription = shortDescription;
+    if (longDescription) product.longDescription = longDescription;
+    if (costPrice) product.costPrice = costPrice;
+    if (sellingPrice) product.sellingPrice = sellingPrice;
+    if (color) product.color = color;
+    if (condition) product.condition = condition;
+    if (make) product.make = make;
+    if (model) product.model = model;
+    if (year) product.year = year;
+    if (milleage) product.milleage = milleage;
+    if (quantity) product.quantity = quantity;
+    if (discount !== undefined) product.discount = discount;
+    if (discountType) product.discountType = discountType;
+    if (discountValue) product.discountValue = discountValue;
+
+    // Handle adding new image files
+    if (req.files && req.files.length > 0) {
+      const imageUrls = req.files.map((file) => file.path);
+      imageUrls.forEach((url) => {
+        product.images.push(url);
+      });
+    }
+
+    // Handle deleting images for multiple imageUrls
+    // if (deleteImages && Array.isArray(deleteImages)) {
+    //   deleteImages.forEach((image) => {
+    //     const imageIndex = product.images.indexOf(image);
+    //     if (imageIndex !== -1) {
+    //       product.images.splice(imageIndex, 1);
+    //     }
+    //   });
+    // }
+
+    // Handle deleting images
+    if (req.body.deleteImages) {
+      let deleteImages;
+      try {
+        deleteImages = JSON.parse(req.body.deleteImages);
+      } catch {
+        deleteImages = [req.body.deleteImages];
+      }
+
+      deleteImages.forEach((image) => {
+        const imageIndex = product.images.indexOf(image);
+        if (imageIndex !== -1) {
+          product.images.splice(imageIndex, 1);
+        }
+      });
+    }
+
+    await req.seller.save();
+
+    return res.status(200).json({
+      success: true,
+      responseMessage: "Product updated successfully",
+      product: product,
+    });
+  } catch (error) {
+    console.log("ErrorEditProduct: ", error);
+    return res.status(500).json({
+      success: false,
+      error: "An error occurred while updating the product",
+    });
   }
 };
