@@ -400,8 +400,6 @@ module.exports.deleteProduct = async (req, res) => {
       });
     }
 
-    console.log("Seller's products:", req.seller.product);
-
     // Find the product by tag within the seller's products array
     const productIndex = req.seller.product.findIndex(
       (p) => p.productTag === productTag
@@ -414,8 +412,14 @@ module.exports.deleteProduct = async (req, res) => {
       });
     }
 
+    // Get the product ID
+    const productId = req.seller.product[productIndex]._id;
+
     // Remove the product from the array
     req.seller.product.splice(productIndex, 1);
+
+    // Remove the product from the Product collection
+    await Product.findByIdAndDelete(productId);
 
     // Save the seller with the removed product
     await req.seller.save();
@@ -448,7 +452,10 @@ module.exports.uploadPhoto = async (req, res) => {
     }
 
     // Find the product by tag within the seller's products array
-    const product = req.seller.product.find((p) => p.productTag === productTag);
+    // const product = req.seller.product.find((p) => p.productTag === productTag);
+
+    // Find the product by productTag
+    const product = await Product.findOne({ productTag });
 
     if (!product) {
       return res.status(404).json({
@@ -466,14 +473,16 @@ module.exports.uploadPhoto = async (req, res) => {
       product.images.push(file.path);
     });
 
-    await req.seller.save();
+    const saveImg = await product.save();
 
-    return res.status(201).json({
-      success: true,
-      responseMessage: "Photo uploaded successfully.",
-      // photoUrl: photoUrl,  // For single image
-      photoUrls: req.files.map((file) => file.path),
-    });
+    if (saveImg) {
+      return res.status(201).json({
+        success: true,
+        responseMessage: "Photo uploaded successfully.",
+        // photoUrl: photoUrl,  // For single image
+        photoUrls: req.files.map((file) => file.path),
+      });
+    }
   } catch (error) {
     console.log(`ErrorUpload: `, error);
     return res.status(500).json({

@@ -112,12 +112,19 @@ module.exports.buyerProfile = async (req, res) => {
 module.exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.find().populate("seller", "username");
-    res
-      .status(200)
-      .json({ success: true, productLength: products.length, products });
+
+    if (products.length === 0) {
+      return res.status(200).json({ product: "No product available" });
+    } else {
+      return res.status(200).json({
+        success: true,
+        productLength: products.length,
+        product: products,
+      });
+    }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, error: error.message });
+    // console.error(error);
+    return res.status(500).json({ success: false, error: error.message });
   }
 };
 
@@ -128,10 +135,19 @@ module.exports.getProductsByCategory = async (req, res) => {
       "seller",
       "username"
     );
-    res.status(200).json({ success: true, product: products });
+
+    if (products.length === 0) {
+      return res.status(200).json({ product: "No product available" });
+    } else {
+      return res.status(200).json({
+        success: true,
+        productLength: products.length,
+        product: products,
+      });
+    }
   } catch (error) {
     // console.error(error);
-    res.status(500).json({ success: false, error: "An error occured" });
+    return res.status(500).json({ success: false, error: "An error occured" });
   }
 };
 
