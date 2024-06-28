@@ -256,7 +256,6 @@ module.exports.addProduct = async (req, res) => {
     const savedProduct = await newProduct.save();
 
     // Add product reference to seller's products array
-    console.log(`prod:`, req.seller);
     req.seller.product.push(savedProduct._id);
     const addedProduct = await req.seller?.save();
 
@@ -274,7 +273,7 @@ module.exports.addProduct = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(`ErrorUpload: `, error);
+    // console.log(`ErrorUpload: `, error);
     return res.status(500).json({
       success: false,
       error: "An error occurred while adding the product",
@@ -392,6 +391,16 @@ module.exports.deleteProduct = async (req, res) => {
         error: "Please provide the product tag.",
       });
     }
+
+    // Ensure req.seller is defined
+    if (!req.seller) {
+      return res.status(401).json({
+        success: false,
+        error: "Seller information is missing.",
+      });
+    }
+
+    console.log("Seller's products:", req.seller.product);
 
     // Find the product by tag within the seller's products array
     const productIndex = req.seller.product.findIndex(

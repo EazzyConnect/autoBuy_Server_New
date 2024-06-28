@@ -22,7 +22,7 @@ module.exports.authorizedSeller = async (req, res, next) => {
 
     // Verify the token
     const decodedData = jwt.verify(token, process.env.SECRET_KEY);
-    const seller = await Seller.findById(decodedData._id);
+    const seller = await Seller.findById(decodedData._id).populate("product");
     if (!seller) {
       return res.status(401).json({
         error: "⚠️ Authentication Failed, please log in",
