@@ -23,6 +23,6 @@ router.get("/profile", authorizedBuyer, buyerProfile);
 router.get("/products", getAllProducts);
 
 // Route to get products by category
-router.post("/products/category", getProductsByCategory);
+router.get("/products/category/:category", getProductsByCategory);
 
 module.exports = router;

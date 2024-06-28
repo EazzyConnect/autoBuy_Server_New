@@ -121,42 +121,42 @@ module.exports.getAllProducts = async (req, res) => {
   }
 };
 
-// module.exports.getProductsByCategory = async (req, res) => {
-//   const { category } = req.params;
-//   try {
-//     const products = await Product.find({ category }).populate(
-//       "seller",
-//       "username"
-//     );
-//     res.status(200).json({ success: true, products });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ success: false, error: error.message });
-//   }
-// };
-
 module.exports.getProductsByCategory = async (req, res) => {
-  const { category } = req.body;
-
-  // Check if category is provided
-  if (!category) {
-    return res
-      .status(400)
-      .json({ success: false, error: "Category is required" });
-  }
-
+  const { category } = req.params;
   try {
-    // Find products by category and populate the seller's username
     const products = await Product.find({ category }).populate(
       "seller",
       "username"
     );
-
-    // Respond with the found products
-    res.status(200).json({ success: true, products });
+    res.status(200).json({ success: true, product: products });
   } catch (error) {
-    // Handle errors
-    console.error(error);
-    res.status(500).json({ success: false, error: error.message });
+    // console.error(error);
+    res.status(500).json({ success: false, error: "An error occured" });
   }
 };
+
+// module.exports.getProductsByCategory = async (req, res) => {
+//   const { category } = req.body;
+
+//   // Check if category is provided
+//   if (!category) {
+//     return res
+//       .status(400)
+//       .json({ success: false, error: "Category is required" });
+//   }
+
+//   try {
+//     // Find products by category and populate the seller's username
+//     const products = await Product.find({ category }).populate(
+//       "seller",
+//       "username"
+//     );
+
+//     // Respond with the found products
+//     res.status(200).json({ success: true, products });
+//   } catch (error) {
+//     // Handle errors
+//     console.error(error);
+//     res.status(500).json({ success: false, error: error.message });
+//   }
+// };
