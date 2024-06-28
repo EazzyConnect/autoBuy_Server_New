@@ -281,104 +281,6 @@ module.exports.addProduct = async (req, res) => {
   }
 };
 
-// EDIT PRODUCT
-// module.exports.editProduct = async (req, res) => {
-//   try {
-//     const {
-//       productTag,
-//       name,
-//       category,
-//       shortDescription,
-//       longDescription,
-//       costPrice,
-//       sellingPrice,
-//       color,
-//       condition,
-//       make,
-//       model,
-//       year,
-//       milleage,
-//       quantity,
-//       discount,
-//       discountType,
-//       discountValue,
-//     } = req.body;
-
-//     // Validate product details
-//     const requiredFields = [
-//       { field: "productTag", value: productTag },
-//       { field: "name", value: name },
-//       { field: "category", value: category },
-//       { field: "shortDescription", value: shortDescription },
-//       { field: "longDescription", value: longDescription },
-//       { field: "costPrice", value: costPrice },
-//       { field: "sellingPrice", value: sellingPrice },
-//       { field: "color", value: color },
-//       { field: "condition", value: condition },
-//       { field: "make", value: make },
-//       { field: "model", value: model },
-//       { field: "year", value: year },
-//       { field: "milleage", value: milleage },
-//       { field: "quantity", value: quantity },
-//       { field: "discount", value: discount },
-//       { field: "discountType", value: discountType },
-//       { field: "discountValue", value: discountValue },
-//     ];
-
-//     // Validate product details
-//     for (let i = 0; i < requiredFields.length; i++) {
-//       if (!requiredFields[i].value) {
-//         return res.status(400).json({
-//           success: false,
-//           error: `Please provide ${requiredFields[i].field}`,
-//         });
-//       }
-//     }
-
-//     // Find the product by tag within the seller's products array
-//     const product = req.seller.product.find((p) => p.productTag === productTag);
-
-//     if (!product) {
-//       return res.status(404).json({
-//         success: false,
-//         error: "Product not found",
-//       });
-//     }
-
-//     // Update product details
-//     (product.name = name),
-//       (product.category = category),
-//       (product.shortDescription = shortDescription),
-//       (product.longDescription = longDescription),
-//       (product.costPrice = costPrice),
-//       (product.sellingPrice = sellingPrice),
-//       (product.color = color),
-//       (product.condition = condition),
-//       (product.make = make),
-//       (product.model = model),
-//       (product.year = year),
-//       (product.milleage = milleage),
-//       (product.quantity = quantity),
-//       (product.discount = discount),
-//       (product.discountType = discountType),
-//       (product.discountValue = discountValue),
-//       // Save the seller with the updated product
-//       await req.seller.save();
-
-//     return res.status(200).json({
-//       success: true,
-//       responseMessage: "Product updated successfully",
-//       product: product,
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).json({
-//       success: false,
-//       error: "An error occurred while updating the product",
-//     });
-//   }
-// };
-
 // ******* DELETE PRODUCT *******
 module.exports.deleteProduct = async (req, res) => {
   try {
@@ -513,8 +415,8 @@ module.exports.deletePhoto = async (req, res) => {
       }
     }
 
-    // Find the product by tag within the seller's products array
-    const product = req.seller.product.find((p) => p.productTag === productTag);
+    // Find the product by productTag
+    const product = await Product.findOne({ productTag });
 
     if (!product) {
       return res.status(404).json({
@@ -535,69 +437,19 @@ module.exports.deletePhoto = async (req, res) => {
     // Remove the image from the array
     product.images.splice(imageIndex, 1);
 
-    await req.seller.save();
-
-    return res.status(200).json({
-      success: true,
-      responseMessage: "Photo deleted successfully.",
-    });
+    const deletedImg = await product.save();
+    if (deletedImg) {
+      return res.status(200).json({
+        success: true,
+        responseMessage: "Photo deleted successfully.",
+      });
+    }
   } catch (error) {
     console.error("ErrorDeletePhoto: ", error);
     return res.status(500).json({
       success: false,
       error: "An error occurred while deleting the photo.",
     });
-  }
-};
-
-// ****** USER SETTINGS: EDIT PROFILE *********
-module.exports.updateSellerProfile = async (req, res) => {
-  try {
-    // Check if req.seller exists
-    if (!req.seller) {
-      return res.status(400).json({
-        success: false,
-        error: "Seller information is missing",
-      });
-    }
-    const {
-      firstName,
-      lastName,
-      username,
-      permanentAddress,
-      presentAddress,
-      city,
-      town,
-    } = req.body;
-
-    if (firstName) req.seller.firstName = firstName;
-    if (lastName) req.seller.lastName = lastName;
-    if (permanentAddress) req.seller.permanentAddress = permanentAddress;
-    if (presentAddress) req.seller.presentAddress = presentAddress;
-    if (city) req.seller.city = city;
-    if (town) req.seller.town = town;
-    if (username) {
-      const checkUsername = await Seller.exists({ username });
-      if (checkUsername !== null) {
-        return res.status(406).json({
-          responseMessage: "Username already taken",
-          success: false,
-        });
-      }
-      req.seller.username = username;
-    }
-
-    const update = await req.seller.save();
-    if (update) {
-      return res
-        .status(200)
-        .json({ responseMessage: "Update successful", success: true });
-    }
-  } catch (error) {
-    console.error();
-    return res
-      .status(500)
-      .json({ responseMessage: "An error occured", success: false });
   }
 };
 
@@ -646,7 +498,10 @@ module.exports.editProduct = async (req, res) => {
     }
 
     // Find the product by tag within the seller's products array
-    const product = req.seller.product.find((p) => p.productTag === productTag);
+    // const product = req.seller.product.find((p) => p.productTag === productTag);
+
+    // Find the product by productTag
+    const product = await Product.findOne({ productTag });
 
     if (!product) {
       return res.status(404).json({
@@ -708,18 +563,71 @@ module.exports.editProduct = async (req, res) => {
       });
     }
 
-    await req.seller.save();
+    const editedProduct = await product.save();
 
-    return res.status(200).json({
-      success: true,
-      responseMessage: "Product updated successfully",
-      product: product,
-    });
+    if (editedProduct) {
+      return res.status(200).json({
+        success: true,
+        responseMessage: "Product updated successfully",
+        product: product,
+      });
+    }
   } catch (error) {
     console.log("ErrorEditProduct: ", error);
     return res.status(500).json({
       success: false,
       error: "An error occurred while updating the product",
     });
+  }
+};
+
+// ****** USER SETTINGS: EDIT PROFILE *********
+module.exports.updateSellerProfile = async (req, res) => {
+  try {
+    // Check if req.seller exists
+    if (!req.seller) {
+      return res.status(400).json({
+        success: false,
+        error: "Seller information is missing",
+      });
+    }
+    const {
+      firstName,
+      lastName,
+      username,
+      permanentAddress,
+      presentAddress,
+      city,
+      town,
+    } = req.body;
+
+    if (firstName) req.seller.firstName = firstName;
+    if (lastName) req.seller.lastName = lastName;
+    if (permanentAddress) req.seller.permanentAddress = permanentAddress;
+    if (presentAddress) req.seller.presentAddress = presentAddress;
+    if (city) req.seller.city = city;
+    if (town) req.seller.town = town;
+    if (username) {
+      const checkUsername = await Seller.exists({ username });
+      if (checkUsername !== null) {
+        return res.status(406).json({
+          responseMessage: "Username already taken",
+          success: false,
+        });
+      }
+      req.seller.username = username;
+    }
+
+    const update = await req.seller.save();
+    if (update) {
+      return res
+        .status(200)
+        .json({ responseMessage: "Update successful", success: true });
+    }
+  } catch (error) {
+    console.error();
+    return res
+      .status(500)
+      .json({ responseMessage: "An error occured", success: false });
   }
 };
