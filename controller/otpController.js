@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const { BuyerOTP, SellerOTP, BrokerOTP } = require("../model/otpSchema");
 const Buyer = require("../model/buyerSchema");
-const Seller = require("../model/sellerSchema");
+const { Seller } = require("../model/sellerSchema");
 const Broker = require("../model/brokerSchema");
 dotenv.config();
 
