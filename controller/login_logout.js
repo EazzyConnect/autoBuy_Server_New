@@ -19,7 +19,7 @@ module.exports.usersLogin = async (req, res) => {
     // Find user in the database
     let user =
       (await Buyer.findOne({ email })) ||
-      (await Seller.findOne({ email })) ||
+      (await Seller.findOne({ email }).populate("product")) ||
       (await Broker.findOne({ email })) ||
       (await Admin.findOne({ email }));
 

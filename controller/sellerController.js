@@ -89,7 +89,9 @@ module.exports.signUp = async (req, res) => {
 module.exports.sellerProfile = async (req, res) => {
   try {
     // Check for the user with the user ID
-    const user = await Seller.findById({ _id: req.seller._id });
+    const user = await Seller.findById({ _id: req.seller._id }).populate(
+      "product"
+    );
     if (!user) {
       return res
         .status(401)
