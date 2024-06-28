@@ -1,4 +1,4 @@
-const Seller = require("../model/sellerSchema");
+const { Seller } = require("../model/sellerSchema");
 const jwt = require("jsonwebtoken");
 
 // ******* BUSINESS OWNER MIDDLEWARE **********

@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Buyer = require("../model/buyerSchema");
-const Seller = require("../model/sellerSchema");
+const { Seller } = require("../model/sellerSchema");
 const Broker = require("../model/brokerSchema");
 const Admin = require("../model/adminSchema");
 

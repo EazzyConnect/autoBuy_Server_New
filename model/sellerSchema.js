@@ -38,26 +38,27 @@ const sellerSchema = new Schema(
       type: String,
     },
     product: [
-      {
-        productTag: { type: String },
-        name: { type: String },
-        category: { type: String },
-        shortDescription: { type: String },
-        longDescription: { type: String },
-        costPrice: { type: String },
-        sellingPrice: { type: String },
-        color: { type: String },
-        condition: { type: String },
-        make: { type: String },
-        model: { type: String },
-        year: { type: String },
-        milleage: { type: String },
-        quantity: { type: String },
-        discount: { type: Boolean },
-        discountType: { type: String },
-        discountValue: { type: String },
-        images: [{ type: String }],
-      },
+      // {
+      //   productTag: { type: String },
+      //   name: { type: String },
+      //   category: { type: String },
+      //   shortDescription: { type: String },
+      //   longDescription: { type: String },
+      //   costPrice: { type: String },
+      //   sellingPrice: { type: String },
+      //   color: { type: String },
+      //   condition: { type: String },
+      //   make: { type: String },
+      //   model: { type: String },
+      //   year: { type: String },
+      //   milleage: { type: String },
+      //   quantity: { type: String },
+      //   discount: { type: Boolean },
+      //   discountType: { type: String },
+      //   discountValue: { type: String },
+      //   images: [{ type: String }],
+      // },
+      { type: Schema.Types.ObjectId, ref: "Product" },
     ],
     role: {
       type: String,
@@ -81,6 +82,35 @@ const sellerSchema = new Schema(
   }
 );
 
-const Seller = new model("sellers", sellerSchema);
+const productSchema = new Schema(
+  {
+    seller: { type: Schema.Types.ObjectId, ref: "Seller" },
+    productTag: { type: String },
+    name: { type: String },
+    category: { type: String },
+    shortDescription: { type: String },
+    longDescription: { type: String },
+    costPrice: { type: String },
+    sellingPrice: { type: String },
+    color: { type: String },
+    condition: { type: String },
+    make: { type: String },
+    model: { type: String },
+    year: { type: String },
+    milleage: { type: String },
+    quantity: { type: String },
+    discount: { type: Boolean },
+    discountType: { type: String },
+    discountValue: { type: String },
+    images: [{ type: String }],
+  },
+  {
+    timestamps: true,
+  }
+);
 
-module.exports = Seller;
+const Product = new model("Product", productSchema);
+
+const Seller = new model("Seller", sellerSchema);
+
+module.exports = { Seller, Product };

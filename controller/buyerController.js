@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Buyer = require("../model/buyerSchema");
 const { sendBuyerOTPEmail } = require("./otpController");
+const { Seller, Product } = require("../model/sellerSchema");
 
 // ******* PASSWORD VALIDATOR ************
 const passwordRegex =
@@ -106,4 +107,56 @@ module.exports.buyerProfile = async (req, res) => {
     ...others
   } = user._doc;
   return res.status(200).json({ responseMessage: others, success: true });
+};
+
+module.exports.getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find().populate("seller", "username");
+    res
+      .status(200)
+      .json({ success: true, productLength: products.length, products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// module.exports.getProductsByCategory = async (req, res) => {
+//   const { category } = req.params;
+//   try {
+//     const products = await Product.find({ category }).populate(
+//       "seller",
+//       "username"
+//     );
+//     res.status(200).json({ success: true, products });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ success: false, error: error.message });
+//   }
+// };
+
+module.exports.getProductsByCategory = async (req, res) => {
+  const { category } = req.body;
+
+  // Check if category is provided
+  if (!category) {
+    return res
+      .status(400)
+      .json({ success: false, error: "Category is required" });
+  }
+
+  try {
+    // Find products by category and populate the seller's username
+    const products = await Product.find({ category }).populate(
+      "seller",
+      "username"
+    );
+
+    // Respond with the found products
+    res.status(200).json({ success: true, products });
+  } catch (error) {
+    // Handle errors
+    console.error(error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 };

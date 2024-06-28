@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
-const Seller = require("../model/sellerSchema");
+const { Seller, Product } = require("../model/sellerSchema");
 const SellerOTP = require("../model/otpSchema");
 const { sendSellerOTPEmail, recoverPassworOTP } = require("./otpController");
 
@@ -196,17 +196,40 @@ module.exports.addProduct = async (req, res) => {
     const productPrefix3 = shortDescription.substring(0, 4).toLowerCase();
     const productPrefix4 = longDescription.substring(0, 5).toLowerCase();
 
-    const productTagName = `${productPrefix}${productPrefix4}${
-      req.seller.product.length + 19
-    }${productPrefix3}${productPrefix2}${Math.floor(
+    const productTagName = `${productPrefix}${productPrefix4}${productPrefix3}${productPrefix2}${Math.floor(
       1000 + Math.random() * 9000
-    )}${req.seller.product.length + 1}`;
+    )}`;
 
     // Trim white spaces
     const productTag = productTagName.trim().replace(/ /g, "");
 
-    // Add product to seller's product array
-    req.seller.product.push({
+    // // Add product to seller's product array
+    // req.seller.product.push({
+    //   productTag,
+    //   name,
+    //   category,
+    //   shortDescription,
+    //   longDescription,
+    //   costPrice,
+    //   sellingPrice,
+    //   color,
+    //   condition,
+    //   make,
+    //   model,
+    //   year,
+    //   milleage,
+    //   quantity,
+    //   discount,
+    //   discountType,
+    //   discountValue,
+    //   images: imageUrls,
+    // });
+
+    // // Save the seller with the new product
+    // const addedProduct = await req.seller?.save();
+
+    const newProduct = new Product({
+      seller: req.seller._id,
       productTag,
       name,
       category,
@@ -227,14 +250,20 @@ module.exports.addProduct = async (req, res) => {
       images: imageUrls,
     });
 
-    // Save the seller with the new product
+    // Save the new product
+    const savedProduct = await newProduct.save();
+
+    // Add product reference to seller's products array
+    console.log(`prod:`, req.seller);
+    req.seller.product.push(savedProduct._id);
     const addedProduct = await req.seller?.save();
 
     if (addedProduct) {
       return res.status(201).json({
         success: true,
         responseMessage: "Product added successfully.",
-        product: req.seller.product[req.seller.product.length - 1],
+        // product: req.seller.product[req.seller.product.length - 1],
+        product: savedProduct,
       });
     } else {
       return res.status(400).json({
@@ -243,7 +272,7 @@ module.exports.addProduct = async (req, res) => {
       });
     }
   } catch (error) {
-    // console.log(`ErrorUpload: `, error);
+    console.log(`ErrorUpload: `, error);
     return res.status(500).json({
       success: false,
       error: "An error occurred while adding the product",
