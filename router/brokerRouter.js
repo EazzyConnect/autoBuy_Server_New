@@ -1,5 +1,9 @@
 const express = require("express");
-const { signUp, brokerProfile } = require("../controller/brokerController");
+const {
+  signUp,
+  brokerProfile,
+  updateBrokerProfile,
+} = require("../controller/brokerController");
 const { verifyBrokerOTP } = require("../controller/otpController");
 const { authorizedBroker } = require("../middleware/brokerMiddleware");
 const router = express.Router();
@@ -14,5 +18,8 @@ router.post("/verification", verifyBrokerOTP);
 
 // ***** PROFILE ******
 router.get("/profile", authorizedBroker, brokerProfile);
+
+// ***** UPDATE PROFILE ********
+router.put("/edit-profile", authorizedBroker, updateBrokerProfile);
 
 module.exports = router;

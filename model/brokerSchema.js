@@ -9,6 +9,9 @@ const brokerSchema = new Schema(
     lastName: {
       type: String,
     },
+    username: {
+      type: String,
+    },
     email: {
       type: String,
       required: [true, "Please provide email address"],

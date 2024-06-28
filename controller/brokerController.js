@@ -107,3 +107,42 @@ module.exports.brokerProfile = async (req, res) => {
   } = user._doc;
   return res.status(200).json({ responseMessage: others, success: true });
 };
+
+// ****** USER SETTINGS: EDIT PROFILE *********
+module.exports.updateBrokerProfile = async (req, res) => {
+  try {
+    // Check if req.broker exists
+    if (!req.broker) {
+      return res.status(400).json({
+        success: false,
+        error: "broker information is missing",
+      });
+    }
+    const { firstName, lastName, username } = req.body;
+
+    if (firstName) req.broker.firstName = firstName;
+    if (lastName) req.broker.lastName = lastName;
+    if (username) {
+      const checkUsername = await Broker.exists({ username });
+      if (checkUsername !== null) {
+        return res.status(406).json({
+          responseMessage: "Username already taken",
+          success: false,
+        });
+      }
+      req.broker.username = username;
+    }
+
+    const update = await req.broker.save();
+    if (update) {
+      return res
+        .status(200)
+        .json({ responseMessage: "Update successful", success: true });
+    }
+  } catch (error) {
+    console.error();
+    return res
+      .status(500)
+      .json({ responseMessage: "An error occured", success: false });
+  }
+};
