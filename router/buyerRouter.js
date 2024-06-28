@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { signUp, buyerProfile } = require("../controller/buyerController");
+const {
+  signUp,
+  buyerProfile,
+  updateBuyerProfile,
+  getAllBrokers,
+} = require("../controller/buyerController");
 const { verifyBuyerOTP } = require("../controller/otpController");
 const { authorizedBuyer } = require("../middleware/buyerMiddleware");
 const {
@@ -19,10 +24,20 @@ router.post("/verification", verifyBuyerOTP);
 // ***** PROFILE ******
 router.get("/profile", authorizedBuyer, buyerProfile);
 
-// Route to get all products
-router.get("/products", getAllProducts);
+// ***** GET ALL PRODUCTS *******
+router.get("/products", authorizedBuyer, getAllProducts);
 
-// Route to get products by category
-router.get("/products/category/:category", getProductsByCategory);
+// ***** GET CATEGORY PRODUCT *******
+router.get(
+  "/products/category/:category",
+  authorizedBuyer,
+  getProductsByCategory
+);
+
+// ***** UPDATE PROFILE ********
+router.put("/edit-profile", authorizedBuyer, updateBuyerProfile);
+
+// ***** GET ALL BROKERS *******
+router.get("/brokers", authorizedBuyer, getAllBrokers);
 
 module.exports = router;

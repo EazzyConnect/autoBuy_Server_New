@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const Buyer = require("../model/buyerSchema");
 const { sendBuyerOTPEmail } = require("./otpController");
 const { Seller, Product } = require("../model/sellerSchema");
+const Broker = require("../model/brokerSchema");
 
 // ******* PASSWORD VALIDATOR ************
 const passwordRegex =
@@ -128,29 +129,6 @@ module.exports.getAllProducts = async (req, res) => {
   }
 };
 
-module.exports.getProductsByCategory = async (req, res) => {
-  const { category } = req.params;
-  try {
-    const products = await Product.find({ category }).populate(
-      "seller",
-      "username"
-    );
-
-    if (products.length === 0) {
-      return res.status(200).json({ product: "No product available" });
-    } else {
-      return res.status(200).json({
-        success: true,
-        productLength: products.length,
-        product: products,
-      });
-    }
-  } catch (error) {
-    // console.error(error);
-    return res.status(500).json({ success: false, error: "An error occured" });
-  }
-};
-
 // module.exports.getProductsByCategory = async (req, res) => {
 //   const { category } = req.body;
 
@@ -176,3 +154,117 @@ module.exports.getProductsByCategory = async (req, res) => {
 //     res.status(500).json({ success: false, error: error.message });
 //   }
 // };
+
+module.exports.getProductsByCategory = async (req, res) => {
+  const { category } = req.params;
+  try {
+    const products = await Product.find({ category }).populate(
+      "seller",
+      "username"
+    );
+
+    if (products.length === 0) {
+      return res.status(200).json({ product: "No product available" });
+    } else {
+      return res.status(200).json({
+        success: true,
+        productLength: products.length,
+        product: products,
+      });
+    }
+  } catch (error) {
+    // console.error(error);
+    return res.status(500).json({ success: false, error: "An error occured" });
+  }
+};
+
+// ****** USER SETTINGS: EDIT PROFILE *********
+module.exports.updateBuyerProfile = async (req, res) => {
+  try {
+    // Check if req.buyer exists
+    if (!req.buyer) {
+      return res.status(400).json({
+        success: false,
+        error: "Buyer information is missing",
+      });
+    }
+    const {
+      firstName,
+      lastName,
+      username,
+      permanentAddress,
+      presentAddress,
+      city,
+      town,
+      postalCode,
+      country,
+      language,
+      timeZone,
+      emailNotification,
+      pushNotification,
+    } = req.body;
+
+    if (firstName) req.buyer.firstName = firstName;
+    if (lastName) req.buyer.lastName = lastName;
+    if (permanentAddress) req.buyer.permanentAddress = permanentAddress;
+    if (presentAddress) req.buyer.presentAddress = presentAddress;
+    if (city) req.buyer.city = city;
+    if (town) req.buyer.town = town;
+    if (postalCode) req.buyer.postalCode = postalCode;
+    if (country) req.buyer.country = country;
+    if (language) req.buyer.language = language;
+    if (timeZone) req.buyer.timeZone = timeZone;
+    if (emailNotification) req.buyer.emailNotification = emailNotification;
+    if (pushNotification) req.buyer.pushNotification = pushNotification;
+    if (username) {
+      const checkUsername = await Buyer.exists({ username });
+      if (checkUsername !== null) {
+        return res.status(406).json({
+          responseMessage: "Username already taken",
+          success: false,
+        });
+      }
+      req.buyer.username = username;
+    }
+
+    const update = await req.buyer.save();
+    if (update) {
+      return res
+        .status(200)
+        .json({ responseMessage: "Update successful", success: true });
+    }
+  } catch (error) {
+    console.error();
+    return res
+      .status(500)
+      .json({ responseMessage: "An error occured", success: false });
+  }
+};
+
+// ***** GET ALL BROKOERS *********
+module.exports.getAllBrokers = async (req, res) => {
+  try {
+    const brokers = await Broker.find(
+      { approved: true },
+      "firstName lastName email -_id"
+    );
+
+    if (brokers.length === 0) {
+      return res
+        .status(404)
+        .json({ responseMessage: "No broker found", success: false });
+    } else {
+      return res.status(200).json({
+        responseMessage: {
+          brokers: brokers,
+          availableBrokers: brokers.length,
+        },
+        success: true,
+      });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ responseMessage: "An error occured", success: false });
+  }
+};
