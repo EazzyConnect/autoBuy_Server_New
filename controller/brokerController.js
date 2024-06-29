@@ -118,10 +118,30 @@ module.exports.updateBrokerProfile = async (req, res) => {
         error: "broker information is missing",
       });
     }
-    const { firstName, lastName, username } = req.body;
+    const {
+      firstName,
+      lastName,
+      username,
+      phone,
+      location,
+      about,
+      experience,
+      specialities,
+      expertise,
+      language,
+      review,
+    } = req.body;
 
     if (firstName) req.broker.firstName = firstName;
     if (lastName) req.broker.lastName = lastName;
+    if (phone) req.broker.phone = phone;
+    if (location) req.broker.location = location;
+    if (about) req.broker.about = about;
+    if (experience) req.broker.experience = experience;
+    if (specialities) req.broker.specialities = specialities;
+    if (expertise) req.broker.expertise = expertise;
+    if (language) req.broker.language = language;
+    if (review) req.broker.review = review;
     if (username) {
       const checkUsername = await Broker.exists({ username });
       if (checkUsername !== null) {

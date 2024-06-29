@@ -25,6 +25,33 @@ const brokerSchema = new Schema(
         "Password must be at least eight (8) characters and contain at least one (1) lowercase, one (1) uppercase, one (1) number and one (1) symbol ",
       ],
     },
+    phone: {
+      type: String,
+    },
+    location: {
+      type: String,
+    },
+    about: {
+      type: String,
+    },
+    experience: {
+      type: String,
+    },
+    specialities: {
+      type: String,
+    },
+    expertise: {
+      type: String,
+    },
+    language: {
+      type: String,
+    },
+    review: {
+      type: String,
+    },
+    profilePhoto: {
+      type: String,
+    },
     role: {
       type: String,
       default: "Broker",
