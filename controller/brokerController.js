@@ -153,6 +153,11 @@ module.exports.updateBrokerProfile = async (req, res) => {
       req.broker.username = username;
     }
 
+    // Update profile photo if a new one is uploaded
+    if (req.file) {
+      req.broker.profilePhoto = req.file.path;
+    }
+
     const update = await req.broker.save();
     if (update) {
       return res

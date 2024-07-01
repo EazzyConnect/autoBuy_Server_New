@@ -7,6 +7,7 @@ const {
 const { verifyBrokerOTP } = require("../controller/otpController");
 const { authorizedBroker } = require("../middleware/brokerMiddleware");
 const router = express.Router();
+const parser = require("../config/cloudinary");
 
 router.use(express.json());
 
@@ -20,6 +21,11 @@ router.post("/verification", verifyBrokerOTP);
 router.get("/profile", authorizedBroker, brokerProfile);
 
 // ***** UPDATE PROFILE ********
-router.put("/edit-profile", authorizedBroker, updateBrokerProfile);
+router.put(
+  "/edit-profile",
+  authorizedBroker,
+  parser.single("profilePhoto"),
+  updateBrokerProfile
+);
 
 module.exports = router;

@@ -4,6 +4,7 @@ const { validationResult } = require("express-validator");
 const { Seller, Product } = require("../model/sellerSchema");
 const SellerOTP = require("../model/otpSchema");
 const { sendSellerOTPEmail, recoverPassworOTP } = require("./otpController");
+const parser = require("../config/cloudinary");
 
 // ******* PASSWORD VALIDATOR ************
 const passwordRegex =
@@ -618,6 +619,11 @@ module.exports.updateSellerProfile = async (req, res) => {
       req.seller.username = username;
     }
 
+    // Update profile photo if a new one is uploaded
+    if (req.file) {
+      req.seller.profilePhoto = req.file.path;
+    }
+
     const update = await req.seller.save();
     if (update) {
       return res
@@ -625,7 +631,7 @@ module.exports.updateSellerProfile = async (req, res) => {
         .json({ responseMessage: "Update successful", success: true });
     }
   } catch (error) {
-    console.error();
+    console.error(error.message);
     return res
       .status(500)
       .json({ responseMessage: "An error occured", success: false });

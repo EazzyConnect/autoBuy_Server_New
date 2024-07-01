@@ -46,6 +46,9 @@ const buyerSchema = new Schema(
     timeZone: {
       type: String,
     },
+    profilePhoto: {
+      type: String,
+    },
     emailNotification: {
       type: Boolean,
       default: false,

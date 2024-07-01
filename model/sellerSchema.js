@@ -37,6 +37,9 @@ const sellerSchema = new Schema(
     town: {
       type: String,
     },
+    profilePhoto: {
+      type: String,
+    },
     product: [
       // {
       //   productTag: { type: String },

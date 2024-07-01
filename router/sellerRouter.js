@@ -60,6 +60,11 @@ router.post(
 router.delete("/delete-photo", authorizedSeller, deletePhoto);
 
 // ***** UPDATE PROFILE ********
-router.put("/edit-profile", authorizedSeller, updateSellerProfile);
+router.put(
+  "/edit-profile",
+  authorizedSeller,
+  parser.single("profilePhoto"),
+  updateSellerProfile
+);
 
 module.exports = router;

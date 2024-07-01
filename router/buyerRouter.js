@@ -11,7 +11,8 @@ const { authorizedBuyer } = require("../middleware/buyerMiddleware");
 const {
   getAllProducts,
   getProductsByCategory,
-} = require("../controller/buyerController"); // Adjust path as needed
+} = require("../controller/buyerController");
+const parser = require("../config/cloudinary");
 
 router.use(express.json());
 
@@ -35,7 +36,12 @@ router.get(
 );
 
 // ***** UPDATE PROFILE ********
-router.put("/edit-profile", authorizedBuyer, updateBuyerProfile);
+router.put(
+  "/edit-profile",
+  authorizedBuyer,
+  parser.single("profilePhoto"),
+  updateBuyerProfile
+);
 
 // ***** GET ALL BROKERS *******
 router.get("/brokers", authorizedBuyer, getAllBrokers);

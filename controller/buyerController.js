@@ -227,6 +227,11 @@ module.exports.updateBuyerProfile = async (req, res) => {
       req.buyer.username = username;
     }
 
+    // Update profile photo if a new one is uploaded
+    if (req.file) {
+      req.buyer.profilePhoto = req.file.path;
+    }
+
     const update = await req.buyer.save();
     if (update) {
       return res
@@ -234,7 +239,7 @@ module.exports.updateBuyerProfile = async (req, res) => {
         .json({ responseMessage: "Update successful", success: true });
     }
   } catch (error) {
-    console.error();
+    console.error(error.message);
     return res
       .status(500)
       .json({ responseMessage: "An error occured", success: false });
